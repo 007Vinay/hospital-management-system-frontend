@@ -128,13 +128,29 @@ function PatientsPage() {
 
             {formError && <p>{formError}</p>}
 
-            <form onSubmit={handleAddPatient}>
+            <form
+                onSubmit={handleAddPatient}
+                className="
+                    bg-white
+                    p-6
+                    rounded
+                    shadow-md
+                    mb-6
+                    space-y-4
+                "
+            >
                 <input
                     type="text"
                     name="name"
                     placeholder="Name"
                     value={formData.name}
                     onChange={handleChange}
+                    className="
+                        border
+                        p-2
+                        rounded
+                        w-full
+                    "
                 />
 
                 <input
@@ -143,6 +159,12 @@ function PatientsPage() {
                     placeholder="Age"
                     value={formData.age}
                     onChange={handleChange}
+                    className="
+                        border
+                        p-2
+                        rounded
+                        w-full
+                    "
                 />
 
                 <input
@@ -151,6 +173,12 @@ function PatientsPage() {
                     placeholder="Gender"
                     value={formData.gender}
                     onChange={handleChange}
+                    className="
+                        border
+                        p-2
+                        rounded
+                        w-full
+                    "
                 />
 
                 <input
@@ -159,6 +187,12 @@ function PatientsPage() {
                     placeholder="Disease"
                     value={formData.disease}
                     onChange={handleChange}
+                    className="
+                        border
+                        p-2
+                        rounded
+                        w-full
+                    "
                 />
 
                 <input
@@ -167,16 +201,39 @@ function PatientsPage() {
                     placeholder="Phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    className="
+                        border
+                        p-2
+                        rounded
+                        w-full
+                    "
                 />
 
-                <button type="submit">
+                <button
+                    type="submit"
+                    className="
+                        bg-blue-600
+                        text-white
+                        px-4
+                        py-2
+                        rounded
+                    "
+                >
                     {editingPatientId ? "Update Patient" : "Add Patient"}
                 </button>
             </form>
 
             <hr />
 
-            <h2>Patients Page</h2>
+            <h2
+                className="
+                    text-3xl
+                    font-bold
+                    mb-6
+                "
+            >
+                Patients Page
+            </h2>
 
             {loading && <p>Loading patients...</p>}
 
@@ -187,34 +244,51 @@ function PatientsPage() {
             )}
 
             {!loading && !error && (
-                <table border="1" cellPadding="10">
+                <table
+                    className="
+                        w-full
+                        bg-white
+                        shadow-md
+                        rounded
+                    "
+                >
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Age</th>
-                            <th>Gender</th>
-                            <th>Disease</th>
-                            <th>Phone</th>
-                            <th>Actions</th>
+                            <th className="border p-3">ID</th>
+                            <th className="border p-3">Name</th>
+                            <th className="border p-3">Age</th>
+                            <th className="border p-3">Gender</th>
+                            <th className="border p-3">Disease</th>
+                            <th className="border p-3">Phone</th>
+                            <th className="border p-3">Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {patients.map((patient) => (
                             <tr key={patient.id}>
-                                <td>{patient.id}</td>
-                                <td>{patient.name}</td>
-                                <td>{patient.age}</td>
-                                <td>{patient.gender}</td>
-                                <td>{patient.disease}</td>
-                                <td>{patient.phone}</td>
+                                <td className="border p-3">{patient.id}</td>
+                                <td className="border p-3">{patient.name}</td>
+                                <td className="border p-3">{patient.age}</td>
+                                <td className="border p-3">{patient.gender}</td>
+                                <td className="border p-3">
+                                    {patient.disease}
+                                </td>
+                                <td className="border p-3">{patient.phone}</td>
 
                                 <td>
                                     <button
                                         onClick={() =>
                                             handleEditPatient(patient)
                                         }
+                                        className="
+                                            bg-yellow-500
+                                            text-white
+                                            px-3
+                                            py-1
+                                            rounded
+                                            mr-2
+                                        "
                                     >
                                         Edit
                                     </button>
@@ -222,6 +296,13 @@ function PatientsPage() {
                                         onClick={() =>
                                             handleDeletePatient(patient.id)
                                         }
+                                        className="
+                                            bg-red-500
+                                            text-white
+                                            px-3
+                                            py-1
+                                            rounded
+                                        "
                                     >
                                         Delete
                                     </button>

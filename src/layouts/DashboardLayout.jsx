@@ -4,11 +4,9 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 
 function DashboardLayout({ children }) {
-
     const navigate = useNavigate();
 
     const handleLogout = () => {
-
         localStorage.removeItem("token");
 
         localStorage.removeItem("username");
@@ -17,21 +15,30 @@ function DashboardLayout({ children }) {
     };
 
     return (
-
-        <div>
-
+        <div className="min-h-screen bg-gray-100">
             <Navbar />
 
-            <Sidebar />
+            <div className="flex">
+                <Sidebar />
 
-            <button onClick={handleLogout}>
-                Logout
-            </button>
+                <div className="flex-1 p-6">
+                    <button
+                        onClick={handleLogout}
+                        className="
+                        bg-red-500
+                        text-white
+                        px-4
+                        py-2
+                        rounded
+                        mb-4
+                    "
+                    >
+                        Logout
+                    </button>
 
-            <hr />
-
-            {children}
-
+                    {children}
+                </div>
+            </div>
         </div>
     );
 }

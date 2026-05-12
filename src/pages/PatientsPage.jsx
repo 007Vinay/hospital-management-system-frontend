@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import api from "../api/axiosConfig";
+import { toast } from "react-toastify";
 
 function PatientsPage() {
     const [patients, setPatients] = useState([]);
@@ -72,6 +73,12 @@ function PatientsPage() {
 
             fetchPatients();
 
+            toast.success(
+                editingPatientId
+                    ? "Patient updated successfully"
+                    : "Patient added successfully"
+            );
+
             setEditingPatientId(null);
 
             setFormData({
@@ -83,6 +90,8 @@ function PatientsPage() {
             });
         } catch (error) {
             console.error(error);
+
+            toast.error("Operation failed");
 
             if (
                 error.response &&
@@ -103,6 +112,8 @@ function PatientsPage() {
             fetchPatients();
         } catch (error) {
             console.error(error);
+
+            toast.error("Operation failed");
         }
     };
 
@@ -120,6 +131,8 @@ function PatientsPage() {
 
     useEffect(() => {
         fetchPatients();
+
+        toast.success("Patient deleted successfully");
     }, []);
 
     return (

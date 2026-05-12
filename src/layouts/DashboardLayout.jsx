@@ -1,5 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+
 function DashboardLayout({ children }) {
 
     const navigate = useNavigate();
@@ -17,7 +20,9 @@ function DashboardLayout({ children }) {
 
         <div>
 
-            <h1>Hospital Management System</h1>
+            <Navbar />
+
+            <Sidebar />
 
             <button onClick={handleLogout}>
                 Logout

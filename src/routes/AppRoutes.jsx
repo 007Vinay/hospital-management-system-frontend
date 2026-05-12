@@ -1,9 +1,6 @@
-import {
-    BrowserRouter,
-    Routes,
-    Route
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import ProtectedRoute from "../components/ProtectedRoute";
 import LoginPage from "../pages/LoginPage";
 import DashboardPage from "../pages/DashboardPage";
 
@@ -22,7 +19,11 @@ function AppRoutes() {
 
                 <Route
                     path="/dashboard"
-                    element={<DashboardPage />}
+                    element={
+                        <ProtectedRoute>
+                            <DashboardPage />
+                        </ProtectedRoute>
+                    }
                 />
 
             </Routes>

@@ -1,4 +1,6 @@
+import api from "../api/axiosConfig";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
 
@@ -6,16 +8,39 @@ function LoginPage() {
 
     const [password, setPassword] = useState("");
 
-    const handleLogin = (e) => {
+    const navigate = useNavigate();
 
-        e.preventDefault();
+    const handleLogin = async (e) => {
 
-        console.log({
-            username,
-            password
-        });
-    };
+    e.preventDefault();
 
+    try {
+
+        const response = await api.post(
+            "/auth/login",
+            {
+                username,
+                password
+            }
+        );
+
+        localStorage.setItem(
+    "token",
+    response.data.token
+);
+
+localStorage.setItem(
+    "username",
+    response.data.username
+);
+
+navigate("/dashboard");
+
+    } catch (error) {
+
+        console.error(error);
+    }
+};
     return (
 
         <div>

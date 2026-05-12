@@ -1,9 +1,13 @@
+import DashboardLayout from "../layouts/DashboardLayout";
+
 function DashboardPage() {
 
     return (
-        <div>
+        <DashboardLayout>
+
             <h2>Dashboard Page</h2>
-        </div>
+
+        </DashboardLayout>
     );
 }
 

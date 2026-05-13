@@ -13,6 +13,8 @@ function AppointmentsPage() {
 
     const [doctors, setDoctors] = useState([]);
 
+    const [editingAppointmentId, setEditingAppointmentId] = useState(null);
+
     const [formData, setFormData] = useState({
         patientId: "",
 
@@ -82,19 +84,34 @@ function AppointmentsPage() {
 
         try {
             console.log(formData);
-            await api.post(
-                `/appointments?patientId=${formData.patientId}&doctorId=${formData.doctorId}`,
 
-                {
-                    appointmentDate: formData.appointmentDate,
+            if (editingAppointmentId) {
+                await api.put(
+                    `/appointments/${editingAppointmentId}`,
 
-                    status: "SCHEDULED",
-                }
-            );
+                    {
+                        appointmentDate: formData.appointmentDate,
+
+                        status: "SCHEDULED",
+                    }
+                );
+
+                toast.success("Appointment updated successfully");
+            } else {
+                await api.post(
+                    `/appointments?patientId=${formData.patientId}&doctorId=${formData.doctorId}`,
+
+                    {
+                        appointmentDate: formData.appointmentDate,
+
+                        status: "SCHEDULED",
+                    }
+                );
+
+                toast.success("Appointment created successfully");
+            }
 
             fetchAppointments();
-
-            toast.success("Appointment created successfully");
 
             setFormData({
                 patientId: "",
@@ -103,6 +120,8 @@ function AppointmentsPage() {
 
                 appointmentDate: "",
             });
+
+            setEditingAppointmentId(null);
         } catch (error) {
             console.error(error);
 
@@ -110,6 +129,32 @@ function AppointmentsPage() {
 
             toast.error("Appointment creation failed");
         }
+    };
+
+    const handleDeleteAppointment = async (id) => {
+        try {
+            await api.delete(`/appointments/${id}`);
+
+            fetchAppointments();
+
+            toast.success("Appointment deleted successfully");
+        } catch (error) {
+            console.error(error);
+
+            toast.error("Delete failed");
+        }
+    };
+
+    const handleEditAppointment = (appointment) => {
+        setFormData({
+            patientId: "",
+
+            doctorId: "",
+
+            appointmentDate: appointment.appointmentDate?.slice(0, 16),
+        });
+
+        setEditingAppointmentId(appointment.id);
     };
 
     return (
@@ -198,7 +243,9 @@ function AppointmentsPage() {
                         rounded
                     "
                 >
-                    Create Appointment
+                    {editingAppointmentId
+                        ? "Update Appointment"
+                        : "Create Appointment"}
                 </button>
             </form>
 
@@ -221,6 +268,8 @@ function AppointmentsPage() {
                         <th className="border p-3">Appointment Date</th>
 
                         <th className="border p-3">Status</th>
+
+                        <th className="border p-3">Actions</th>
                     </tr>
                 </thead>
 
@@ -242,6 +291,39 @@ function AppointmentsPage() {
                             </td>
 
                             <td className="border p-3">{appointment.status}</td>
+
+                            <td className="border p-3">
+                                <button
+                                    onClick={() =>
+                                        handleEditAppointment(appointment)
+                                    }
+                                    className="
+                                        bg-yellow-500
+                                        text-white
+                                        px-3
+                                        py-1
+                                        rounded
+                                        mr-2
+                                    "
+                                >
+                                    Edit
+                                </button>
+
+                                <button
+                                    onClick={() =>
+                                        handleDeleteAppointment(appointment.id)
+                                    }
+                                    className="
+                                        bg-red-500
+                                        text-white
+                                        px-3
+                                        py-1
+                                        rounded
+                                    "
+                                >
+                                    Delete
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

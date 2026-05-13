@@ -6,6 +6,8 @@ import api from "../api/axiosConfig";
 
 import { toast } from "react-toastify";
 
+import ConfirmModal from "../components/ConfirmModal";
+
 function AppointmentsPage() {
     const [appointments, setAppointments] = useState([]);
 
@@ -14,6 +16,10 @@ function AppointmentsPage() {
     const [doctors, setDoctors] = useState([]);
 
     const [editingAppointmentId, setEditingAppointmentId] = useState(null);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
 
     const [formData, setFormData] = useState({
         patientId: "",
@@ -131,6 +137,11 @@ function AppointmentsPage() {
         }
     };
 
+    const openDeleteModal = (id) => {
+        setSelectedAppointmentId(id);
+
+        setIsModalOpen(true);
+    };
     const handleDeleteAppointment = async (id) => {
         try {
             await api.delete(`/appointments/${id}`);
@@ -311,7 +322,7 @@ function AppointmentsPage() {
 
                                 <button
                                     onClick={() =>
-                                        handleDeleteAppointment(appointment.id)
+                                        openDeleteModal(appointment.id)
                                     }
                                     className="
                                         bg-red-500
@@ -328,6 +339,19 @@ function AppointmentsPage() {
                     ))}
                 </tbody>
             </table>
+
+            <ConfirmModal
+                isOpen={isModalOpen}
+                title="Delete Appointment"
+                message="
+                        Are you sure you want to delete this appointment?"
+                onConfirm={() => {
+                    handleDeleteAppointment(selectedAppointmentId);
+
+                    setIsModalOpen(false);
+                }}
+                onCancel={() => setIsModalOpen(false)}
+            />
         </DashboardLayout>
     );
 }

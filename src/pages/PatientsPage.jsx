@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import api from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import ConfirmModal from "../components/ConfirmModal";
 
 function PatientsPage() {
     const [patients, setPatients] = useState([]);
@@ -21,6 +22,22 @@ function PatientsPage() {
         disease: "",
         phone: "",
     });
+
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const patientsPerPage = 5;
+
+    const [sortField, setSortField] = useState("");
+
+    const [sortOrder, setSortOrder] = useState("asc");
+
+    const [submitting, setSubmitting] = useState(false);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [selectedPatientId, setSelectedPatientId] = useState(null);
 
     const fetchPatients = async () => {
         try {
@@ -60,6 +77,7 @@ function PatientsPage() {
             return;
         }
 
+        setSubmitting(true);
         try {
             if (editingPatientId) {
                 await api.put(
@@ -88,6 +106,8 @@ function PatientsPage() {
                 disease: "",
                 phone: "",
             });
+
+            setSubmitting(false);
         } catch (error) {
             console.error(error);
 
@@ -99,6 +119,7 @@ function PatientsPage() {
                 error.response.data.message
             ) {
                 setFormError(error.response.data.message);
+                setSubmitting(false);
             } else {
                 setFormError("Failed to add patient");
             }
@@ -110,12 +131,48 @@ function PatientsPage() {
             await api.delete(`/patients/${id}`);
 
             fetchPatients();
+            toast.success("Patient deleted successfully");
         } catch (error) {
             console.error(error);
 
             toast.error("Operation failed");
         }
     };
+
+    const openDeleteModal = (id) => {
+        setSelectedPatientId(id);
+
+        setIsModalOpen(true);
+    };
+
+    const filteredPatients = patients.filter((patient) =>
+        patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const sortedPatients = [...filteredPatients].sort((a, b) => {
+        if (!sortField) return 0;
+
+        if (a[sortField] < b[sortField]) {
+            return sortOrder === "asc" ? -1 : 1;
+        }
+
+        if (a[sortField] > b[sortField]) {
+            return sortOrder === "asc" ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    const indexOfLastPatient = currentPage * patientsPerPage;
+
+    const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
+
+    const currentPatients = sortedPatients.slice(
+        indexOfFirstPatient,
+        indexOfLastPatient
+    );
+
+    const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
 
     const handleEditPatient = (patient) => {
         setEditingPatientId(patient.id);
@@ -131,8 +188,6 @@ function PatientsPage() {
 
     useEffect(() => {
         fetchPatients();
-
-        toast.success("Patient deleted successfully");
     }, []);
 
     return (
@@ -224,15 +279,21 @@ function PatientsPage() {
 
                 <button
                     type="submit"
+                    disabled={submitting}
                     className="
                         bg-blue-600
                         text-white
                         px-4
                         py-2
                         rounded
+                        disabled:bg-gray-400
                     "
                 >
-                    {editingPatientId ? "Update Patient" : "Add Patient"}
+                    {submitting
+                        ? "Processing..."
+                        : editingPatientId
+                          ? "Update Patient"
+                          : "Add Patient"}
                 </button>
             </form>
 
@@ -247,6 +308,58 @@ function PatientsPage() {
             >
                 Patients Page
             </h2>
+
+            <input
+                type="text"
+                placeholder="Search patient by name"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="
+                    border
+                    p-2
+                    rounded
+                    mb-4
+                    w-full
+                    bg-white
+                "
+            />
+            <div
+                className="
+                    flex
+                    gap-4
+                    mb-4
+                "
+            >
+                <select
+                    value={sortField}
+                    onChange={(e) => setSortField(e.target.value)}
+                    className="
+                        border
+                        p-2
+                        rounded
+                    "
+                >
+                    <option value="">Sort By</option>
+
+                    <option value="name">Name</option>
+
+                    <option value="age">Age</option>
+                </select>
+
+                <select
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                    className="
+                        border
+                        p-2
+                        rounded
+                    "
+                >
+                    <option value="asc">Ascending</option>
+
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
 
             {loading && <p>Loading patients...</p>}
 
@@ -278,7 +391,7 @@ function PatientsPage() {
                     </thead>
 
                     <tbody>
-                        {patients.map((patient) => (
+                        {currentPatients.map((patient) => (
                             <tr key={patient.id}>
                                 <td className="border p-3">{patient.id}</td>
                                 <td className="border p-3">{patient.name}</td>
@@ -306,8 +419,9 @@ function PatientsPage() {
                                         Edit
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() =>
-                                            handleDeletePatient(patient.id)
+                                            openDeleteModal(patient.id)
                                         }
                                         className="
                                             bg-red-500
@@ -325,6 +439,67 @@ function PatientsPage() {
                     </tbody>
                 </table>
             )}
+            <div
+                className="
+                    flex
+                    justify-center
+                    items-center
+                    gap-4
+                    mt-6
+                "
+            >
+                <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="
+                        bg-blue-500
+                        text-white
+                        px-4
+                        py-2
+                        rounded
+                        disabled:bg-gray-400
+                    "
+                >
+                    Previous
+                </button>
+
+                <span>
+                    Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="
+                        bg-blue-500
+                        text-white
+                        px-4
+                        py-2
+                        rounded
+                        disabled:bg-gray-400
+                    "
+                >
+                    Next
+                </button>
+            </div>
+
+            <ConfirmModal
+                isOpen={isModalOpen}
+                title="Delete Patient"
+                message="Are you sure you want to delete this patient?"
+                onCancel={() => {
+                    setIsModalOpen(false);
+
+                    setSelectedPatientId(null);
+                }}
+                onConfirm={() => {
+                    handleDeletePatient(selectedPatientId);
+
+                    setIsModalOpen(false);
+
+                    setSelectedPatientId(null);
+                }}
+            />
         </DashboardLayout>
     );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 
@@ -21,6 +21,32 @@ function AppointmentsPage() {
 
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
 
+    const [page, setPage] = useState(0);
+
+    const [totalPages, setTotalPages] = useState(0);
+
+    const [size] = useState(5);
+
+    const [sortBy, setSortBy] = useState("appointmentDate");
+
+    const [statusFilter, setStatusFilter] = useState("");
+
+    const [doctorFilter, setDoctorFilter] = useState("");
+
+    const [patientFilter, setPatientFilter] = useState("");
+
+    const [doctorSearch, setDoctorSearch] = useState("");
+
+    const [patientSearch, setPatientSearch] = useState("");
+
+    const [showDoctorSuggestions, setShowDoctorSuggestions] = useState(false);
+
+    const [showPatientSuggestions, setShowPatientSuggestions] = useState(false);
+
+    const [startDate, setStartDate] = useState("");
+
+    const [endDate, setEndDate] = useState("");
+
     const [formData, setFormData] = useState({
         patientId: "",
 
@@ -29,25 +55,67 @@ function AppointmentsPage() {
         appointmentDate: "",
     });
 
+    // FILTERED DOCTORS
+
+    const filteredDoctors = doctors.filter((doctor) =>
+        doctor.name?.toLowerCase().includes(doctorSearch.toLowerCase())
+    );
+
+    // FILTERED PATIENTS
+
+    const filteredPatients = patients.filter((patient) =>
+        patient.name?.toLowerCase().includes(patientSearch.toLowerCase())
+    );
+
+    // FETCH APPOINTMENTS
+
     const fetchAppointments = async () => {
         try {
-            const response = await api.get("/appointments");
+            let url = "";
 
-            console.log("Appointments API:", response.data);
+            // DATE RANGE
 
-            console.log(response.data);
+            if (startDate && endDate) {
+                url = `/appointments/date-range?startDate=${startDate}&endDate=${endDate}`;
 
-            setAppointments(
-                Array.isArray(response.data.content)
-                    ? response.data.content
-                    : []
-            );
+                const response = await api.get(url);
+
+                setAppointments(response.data);
+
+                setTotalPages(1);
+
+                return;
+            }
+
+            // FILTER SEARCH
+
+            url = `/appointments/search?page=${page}&size=${size}&sortBy=${sortBy}`;
+
+            if (statusFilter !== "") {
+                url += `&status=${statusFilter}`;
+            }
+
+            if (doctorFilter !== "") {
+                url += `&doctorId=${doctorFilter}`;
+            }
+
+            if (patientFilter !== "") {
+                url += `&patientId=${patientFilter}`;
+            }
+
+            const response = await api.get(url);
+
+            setAppointments(response.data.content || []);
+
+            setTotalPages(response.data.totalPages || 0);
         } catch (error) {
             console.error(error);
 
             toast.error("Failed to fetch appointments");
         }
     };
+
+    // FETCH PATIENTS
 
     const fetchPatients = async () => {
         try {
@@ -59,6 +127,8 @@ function AppointmentsPage() {
         }
     };
 
+    // FETCH DOCTORS
+
     const fetchDoctors = async () => {
         try {
             const response = await api.get("/doctors");
@@ -69,13 +139,29 @@ function AppointmentsPage() {
         }
     };
 
-    useEffect(() => {
-        fetchAppointments();
+    // INITIAL LOAD
 
+    useEffect(() => {
         fetchPatients();
 
         fetchDoctors();
     }, []);
+
+    // REAL-TIME FILTERING
+
+    useEffect(() => {
+        fetchAppointments();
+    }, [
+        page,
+        sortBy,
+        statusFilter,
+        doctorFilter,
+        patientFilter,
+        startDate,
+        endDate,
+    ]);
+
+    // HANDLE FORM CHANGE
 
     const handleChange = (e) => {
         setFormData({
@@ -85,12 +171,12 @@ function AppointmentsPage() {
         });
     };
 
+    // CREATE / UPDATE
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            console.log(formData);
-
             if (editingAppointmentId) {
                 await api.put(
                     `/appointments/${editingAppointmentId}`,
@@ -131,17 +217,18 @@ function AppointmentsPage() {
         } catch (error) {
             console.error(error);
 
-            console.log(error.response?.data);
-
-            toast.error("Appointment creation failed");
+            toast.error("Appointment failed");
         }
     };
+
+    // DELETE
 
     const openDeleteModal = (id) => {
         setSelectedAppointmentId(id);
 
         setIsModalOpen(true);
     };
+
     const handleDeleteAppointment = async (id) => {
         try {
             await api.delete(`/appointments/${id}`);
@@ -156,16 +243,42 @@ function AppointmentsPage() {
         }
     };
 
+    // EDIT
+
     const handleEditAppointment = (appointment) => {
         setFormData({
-            patientId: "",
+            patientId: appointment.patientId || "",
 
-            doctorId: "",
+            doctorId: appointment.doctorId || "",
 
-            appointmentDate: appointment.appointmentDate?.slice(0, 16),
+            appointmentDate: appointment.appointmentDate
+                ?.replace(" ", "T")
+                ?.slice(0, 16),
         });
 
         setEditingAppointmentId(appointment.id);
+    };
+
+    // CLEAR FILTERS
+
+    const handleClearFilters = () => {
+        setStatusFilter("");
+
+        setDoctorFilter("");
+
+        setPatientFilter("");
+
+        setDoctorSearch("");
+
+        setPatientSearch("");
+
+        setStartDate("");
+
+        setEndDate("");
+
+        setSortBy("appointmentDate");
+
+        setPage(0);
     };
 
     return (
@@ -180,12 +293,14 @@ function AppointmentsPage() {
                 Appointments
             </h1>
 
+            {/* FORM */}
+
             <form
                 onSubmit={handleSubmit}
                 className="
                     bg-white
                     p-6
-                    rounded
+                    rounded-xl
                     shadow-md
                     mb-6
                     space-y-4
@@ -197,16 +312,16 @@ function AppointmentsPage() {
                     onChange={handleChange}
                     className="
                         border
-                        p-2
-                        rounded
+                        p-3
+                        rounded-lg
                         w-full
                     "
                 >
                     <option value="">Select Patient</option>
 
-                    {patients.map((patient) => (
-                        <option key={patient.id} value={patient.id}>
-                            {patient.name}
+                    {patients.map((p) => (
+                        <option key={p.id} value={p.id}>
+                            {p.name}
                         </option>
                     ))}
                 </select>
@@ -217,16 +332,16 @@ function AppointmentsPage() {
                     onChange={handleChange}
                     className="
                         border
-                        p-2
-                        rounded
+                        p-3
+                        rounded-lg
                         w-full
                     "
                 >
                     <option value="">Select Doctor</option>
 
-                    {doctors.map((doctor) => (
-                        <option key={doctor.id} value={doctor.id}>
-                            {doctor.name}
+                    {doctors.map((d) => (
+                        <option key={d.id} value={d.id}>
+                            {d.name}
                         </option>
                     ))}
                 </select>
@@ -238,8 +353,8 @@ function AppointmentsPage() {
                     onChange={handleChange}
                     className="
                         border
-                        p-2
-                        rounded
+                        p-3
+                        rounded-lg
                         w-full
                     "
                 />
@@ -247,11 +362,12 @@ function AppointmentsPage() {
                 <button
                     type="submit"
                     className="
-                        bg-blue-500
+                        bg-blue-600
+                        hover:bg-blue-700
                         text-white
-                        px-4
+                        px-5
                         py-2
-                        rounded
+                        rounded-lg
                     "
                 >
                     {editingAppointmentId
@@ -260,91 +376,448 @@ function AppointmentsPage() {
                 </button>
             </form>
 
-            <table
+            {/* FILTERS */}
+
+            <div
                 className="
-                    w-full
-                    bg-white
-                    shadow-md
-                    rounded
+                    grid
+                    grid-cols-1
+                    md:grid-cols-2
+                    lg:grid-cols-3
+                    gap-4
+                    mb-6
                 "
             >
-                <thead>
-                    <tr>
-                        <th className="border p-3">ID</th>
+                {/* STATUS */}
 
-                        <th className="border p-3">Patient</th>
+                <select
+                    value={statusFilter}
+                    onChange={(e) => {
+                        setPage(0);
 
-                        <th className="border p-3">Doctor</th>
+                        setStatusFilter(e.target.value);
+                    }}
+                    className="
+                        border
+                        p-3
+                        rounded-lg
+                        bg-white
+                    "
+                >
+                    <option value="">All Status</option>
 
-                        <th className="border p-3">Appointment Date</th>
+                    <option value="SCHEDULED">Scheduled</option>
 
-                        <th className="border p-3">Status</th>
+                    <option value="PENDING">Pending</option>
 
-                        <th className="border p-3">Actions</th>
-                    </tr>
-                </thead>
+                    <option value="COMPLETED">Completed</option>
+                </select>
 
-                <tbody>
-                    {appointments.map((appointment) => (
-                        <tr key={appointment.id}>
-                            <td className="border p-3">{appointment.id}</td>
+                {/* DOCTOR SEARCH */}
 
-                            <td className="border p-3">
-                                {appointment.patientName}
-                            </td>
+                <div className="relative">
+                    <input
+                        type="text"
+                        placeholder="Search Doctor"
+                        value={doctorSearch}
+                        onChange={(e) => {
+                            const value = e.target.value;
 
-                            <td className="border p-3">
-                                {appointment.doctorName}
-                            </td>
+                            setDoctorSearch(value);
 
-                            <td className="border p-3">
-                                {appointment.appointmentDate}
-                            </td>
+                            setShowDoctorSuggestions(true);
 
-                            <td className="border p-3">{appointment.status}</td>
+                            setPage(0);
 
-                            <td className="border p-3">
-                                <button
-                                    onClick={() =>
-                                        handleEditAppointment(appointment)
-                                    }
+                            if (value === "") {
+                                setDoctorFilter("");
+                            }
+                        }}
+                        className="
+                            border
+                            p-3
+                            rounded-lg
+                            w-full
+                            bg-white
+                        "
+                    />
+
+                    {showDoctorSuggestions && doctorSearch && (
+                        <div
+                            className="
+                                absolute
+                                z-10
+                                bg-white
+                                border
+                                rounded-lg
+                                w-full
+                                max-h-48
+                                overflow-y-auto
+                                shadow-lg
+                            "
+                        >
+                            {filteredDoctors.map((doctor) => (
+                                <div
+                                    key={doctor.id}
+                                    onClick={() => {
+                                        setDoctorFilter(doctor.id);
+
+                                        setDoctorSearch(doctor.name);
+
+                                        setShowDoctorSuggestions(false);
+
+                                        setPage(0);
+                                    }}
                                     className="
-                                        bg-yellow-500
-                                        text-white
-                                        px-3
-                                        py-1
-                                        rounded
-                                        mr-2
+                                        p-3
+                                        hover:bg-gray-100
+                                        cursor-pointer
                                     "
                                 >
-                                    Edit
-                                </button>
+                                    {doctor.name}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
-                                <button
-                                    onClick={() =>
-                                        openDeleteModal(appointment.id)
-                                    }
+                {/* PATIENT SEARCH */}
+
+                <div className="relative">
+                    <input
+                        type="text"
+                        placeholder="Search Patient"
+                        value={patientSearch}
+                        onChange={(e) => {
+                            const value = e.target.value;
+
+                            setPatientSearch(value);
+
+                            setShowPatientSuggestions(true);
+
+                            setPage(0);
+
+                            if (value === "") {
+                                setPatientFilter("");
+                            }
+                        }}
+                        className="
+                            border
+                            p-3
+                            rounded-lg
+                            w-full
+                            bg-white
+                        "
+                    />
+
+                    {showPatientSuggestions && patientSearch && (
+                        <div
+                            className="
+                                absolute
+                                z-10
+                                bg-white
+                                border
+                                rounded-lg
+                                w-full
+                                max-h-48
+                                overflow-y-auto
+                                shadow-lg
+                            "
+                        >
+                            {filteredPatients.map((patient) => (
+                                <div
+                                    key={patient.id}
+                                    onClick={() => {
+                                        setPatientFilter(patient.id);
+
+                                        setPatientSearch(patient.name);
+
+                                        setShowPatientSuggestions(false);
+
+                                        setPage(0);
+                                    }}
                                     className="
-                                        bg-red-500
-                                        text-white
-                                        px-3
-                                        py-1
-                                        rounded
+                                        p-3
+                                        hover:bg-gray-100
+                                        cursor-pointer
                                     "
                                 >
-                                    Delete
-                                </button>
-                            </td>
+                                    {patient.name}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* START DATE */}
+
+                <div>
+                    <label
+                        className="
+                            block
+                            mb-1
+                            font-medium
+                        "
+                    >
+                        Start Date
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        value={startDate}
+                        onChange={(e) => {
+                            setStartDate(e.target.value);
+
+                            setPage(0);
+                        }}
+                        className="
+                            border
+                            p-3
+                            rounded-lg
+                            bg-white
+                            w-full
+                        "
+                    />
+                </div>
+
+                {/* END DATE */}
+
+                <div>
+                    <label
+                        className="
+                            block
+                            mb-1
+                            font-medium
+                        "
+                    >
+                        End Date
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        value={endDate}
+                        onChange={(e) => {
+                            setEndDate(e.target.value);
+
+                            setPage(0);
+                        }}
+                        className="
+                            border
+                            p-3
+                            rounded-lg
+                            bg-white
+                            w-full
+                        "
+                    />
+                </div>
+
+                {/* SORT */}
+
+                <select
+                    value={sortBy}
+                    onChange={(e) => {
+                        setSortBy(e.target.value);
+
+                        setPage(0);
+                    }}
+                    className="
+                        border
+                        p-3
+                        rounded-lg
+                        bg-white
+                    "
+                >
+                    <option value="appointmentDate">Sort By Date</option>
+
+                    <option value="status">Sort By Status</option>
+                </select>
+            </div>
+
+            {/* CLEAR FILTER */}
+
+            <div className="mb-6">
+                <button
+                    onClick={handleClearFilters}
+                    className="
+                        bg-red-500
+                        hover:bg-red-600
+                        text-white
+                        px-5
+                        py-2
+                        rounded-lg
+                    "
+                >
+                    Clear Filters
+                </button>
+            </div>
+
+            {/* TABLE */}
+
+            <div
+                className="
+                    overflow-x-auto
+                    bg-white
+                    rounded-xl
+                    shadow-md
+                "
+            >
+                <table
+                    className="
+                        w-full
+                        border-collapse
+                    "
+                >
+                    <thead className="bg-gray-100">
+                        <tr>
+                            <th className="p-4 border">ID</th>
+
+                            <th className="p-4 border">Patient</th>
+
+                            <th className="p-4 border">Doctor</th>
+
+                            <th className="p-4 border">Appointment Date</th>
+
+                            <th className="p-4 border">Status</th>
+
+                            <th className="p-4 border">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody>
+                        {appointments.length > 0 ? (
+                            appointments.map((a) => (
+                                <tr
+                                    key={a.id}
+                                    className="
+                                        hover:bg-gray-50
+                                    "
+                                >
+                                    <td className="p-4 border">{a.id}</td>
+
+                                    <td className="p-4 border">
+                                        {a.patientName}
+                                    </td>
+
+                                    <td className="p-4 border">
+                                        {a.doctorName}
+                                    </td>
+
+                                    <td className="p-4 border">
+                                        {a.appointmentDate}
+                                    </td>
+
+                                    <td className="p-4 border">{a.status}</td>
+
+                                    <td className="p-4 border">
+                                        <button
+                                            onClick={() =>
+                                                handleEditAppointment(a)
+                                            }
+                                            className="
+                                                bg-yellow-500
+                                                hover:bg-yellow-600
+                                                text-white
+                                                px-3
+                                                py-1
+                                                rounded-lg
+                                                mr-2
+                                            "
+                                        >
+                                            Edit
+                                        </button>
+
+                                        <button
+                                            onClick={() =>
+                                                openDeleteModal(a.id)
+                                            }
+                                            className="
+                                                bg-red-500
+                                                hover:bg-red-600
+                                                text-white
+                                                px-3
+                                                py-1
+                                                rounded-lg
+                                            "
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td
+                                    colSpan="6"
+                                    className="
+                                        text-center
+                                        p-6
+                                    "
+                                >
+                                    No appointments found
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* PAGINATION */}
+
+            <div
+                className="
+                    flex
+                    justify-center
+                    items-center
+                    gap-4
+                    mt-6
+                "
+            >
+                <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 0}
+                    className="
+                        bg-blue-600
+                        hover:bg-blue-700
+                        disabled:bg-gray-400
+                        text-white
+                        px-5
+                        py-2
+                        rounded-lg
+                    "
+                >
+                    Previous
+                </button>
+
+                <span className="font-semibold">
+                    Page {totalPages === 0 ? 0 : page + 1} of {totalPages}
+                </span>
+
+                <button
+                    onClick={() => setPage(page + 1)}
+                    disabled={page + 1 >= totalPages}
+                    className="
+                        bg-blue-600
+                        hover:bg-blue-700
+                        disabled:bg-gray-400
+                        text-white
+                        px-5
+                        py-2
+                        rounded-lg
+                    "
+                >
+                    Next
+                </button>
+            </div>
+
+            {/* DELETE MODAL */}
 
             <ConfirmModal
                 isOpen={isModalOpen}
                 title="Delete Appointment"
                 message="
-                        Are you sure you want to delete this appointment?"
+                    Are you sure you want
+                    to delete this appointment?
+                "
                 onConfirm={() => {
                     handleDeleteAppointment(selectedAppointmentId);
 

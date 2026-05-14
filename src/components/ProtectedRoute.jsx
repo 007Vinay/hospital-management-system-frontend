@@ -12,7 +12,8 @@ function ProtectedRoute({ allowedRoles }) {
 
     // Role not authorized
     if (allowedRoles && !allowedRoles.includes(role)) {
-        return <Navigate to="/unauthorized" />;
+        alert("403 Unauthorized Access");
+        return <Navigate to="/dashboard" />;
     }
 
     return <Outlet />;

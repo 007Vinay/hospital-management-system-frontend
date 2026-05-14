@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 import api from "../api/axiosConfig";
 import { useAuth } from "../context/AuthContext";
 
@@ -89,6 +89,23 @@ function LoginPage() {
                         {loading ? "Logging in..." : "Login"}
                     </button>
                 </form>
+                <p
+                    className="
+                            text-center
+                            mt-4
+                        "
+                >
+                    Don't have an account?{" "}
+                    <Link
+                        to="/register"
+                        className="
+                                text-blue-600
+                                font-semibold
+                            "
+                    >
+                        Register
+                    </Link>
+                </p>
             </div>
         </div>
     );

@@ -39,6 +39,12 @@ function Sidebar() {
                 </li>
 
                 <li>
+                    <Link to="/my-profile" className="text-blue-600">
+                        My Profile
+                    </Link>
+                </li>
+
+                <li>
                     <Link to="/patients" className="text-blue-600">
                         Patients
                     </Link>

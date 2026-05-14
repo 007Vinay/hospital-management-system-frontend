@@ -1,15 +1,21 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-function ProtectedRoute({ children }) {
+import { useAuth } from "../context/AuthContext";
 
-    const token = localStorage.getItem("token");
+function ProtectedRoute({ allowedRoles }) {
+    const { token, role } = useAuth();
 
+    // User not logged in
     if (!token) {
-
-        return <Navigate to="/" />;
+        return <Navigate to="/login" />;
     }
 
-    return children;
+    // Role not authorized
+    if (allowedRoles && !allowedRoles.includes(role)) {
+        return <Navigate to="/unauthorized" />;
+    }
+
+    return <Outlet />;
 }
 
 export default ProtectedRoute;

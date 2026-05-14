@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import UnauthorizedPage from "../pages/UnauthorizedPage";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 import LoginPage from "../pages/LoginPage";
@@ -13,42 +14,26 @@ function AppRoutes() {
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
 
-                <Route
-                    path="/dashboard"
-                    element={
-                        <ProtectedRoute>
-                            <DashboardPage />
-                        </ProtectedRoute>
-                    }
-                />
                 <Route path="/" element={<Navigate to="/login" />} />
 
-                <Route
-                    path="/patients"
-                    element={
-                        <ProtectedRoute>
-                            <PatientsPage />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<DashboardPage />} />
+
+                    <Route path="/patients" element={<PatientsPage />} />
+
+                    <Route
+                        path="/appointments"
+                        element={<AppointmentsPage />}
+                    />
+                </Route>
 
                 <Route
-                    path="/doctors"
-                    element={
-                        <ProtectedRoute>
-                            <DoctorsPage />
-                        </ProtectedRoute>
-                    }
-                />
+                    element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]} />}
+                >
+                    <Route path="/doctors" element={<DoctorsPage />} />
+                </Route>
 
-                <Route
-                    path="/appointments"
-                    element={
-                        <ProtectedRoute>
-                            <AppointmentsPage />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
             </Routes>
         </BrowserRouter>
     );

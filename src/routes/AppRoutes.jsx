@@ -8,6 +8,7 @@ import LoginPage from "../pages/LoginPage";
 import DashboardPage from "../pages/DashboardPage";
 import PatientsPage from "../pages/PatientsPage";
 import DoctorsPage from "../pages/DoctorsPage";
+import MyAppointmentsPage from "../pages/MyAppointmentsPage";
 import AppointmentsPage from "../pages/AppointmentsPage";
 
 function AppRoutes() {
@@ -27,6 +28,10 @@ function AppRoutes() {
 
                     <Route path="/patients" element={<PatientsPage />} />
 
+                    <Route
+                        path="/my-appointments"
+                        element={<MyAppointmentsPage />}
+                    />
                     <Route
                         path="/appointments"
                         element={<AppointmentsPage />}

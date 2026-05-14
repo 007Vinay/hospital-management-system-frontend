@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
-
+import BookAppointmentPage from "../pages/BookAppointmentPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import LoginPage from "../pages/LoginPage";
 import DashboardPage from "../pages/DashboardPage";
@@ -26,6 +26,10 @@ function AppRoutes() {
                         element={<AppointmentsPage />}
                     />
                 </Route>
+                <Route
+                    path="/book-appointment"
+                    element={<BookAppointmentPage />}
+                />
 
                 <Route
                     element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]} />}

@@ -55,6 +55,11 @@ function Sidebar() {
                         <Link to="/appointments">Appointments</Link>
                     )}
                 </li>
+                <li>
+                    <Link to="/book-appointment" className="text-blue-600">
+                        Book Appointment
+                    </Link>
+                </li>
             </ul>
         </div>
     );

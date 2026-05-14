@@ -11,7 +11,9 @@ export function AuthProvider({ children }) {
 
     const [role, setRole] = useState(localStorage.getItem("role") || "");
 
-    const login = (jwtToken, user, userRole) => {
+    const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
+
+    const login = (jwtToken, user, userRole, id) => {
         localStorage.setItem("token", jwtToken);
 
         localStorage.setItem("username", user);
@@ -22,7 +24,11 @@ export function AuthProvider({ children }) {
 
         localStorage.setItem("role", userRole);
 
+        localStorage.setItem("userId", id);
+
         setRole(userRole);
+
+        setUserId(id);
     };
 
     const logout = () => {
@@ -36,7 +42,11 @@ export function AuthProvider({ children }) {
 
         localStorage.removeItem("role");
 
+        localStorage.removeItem("userId");
+
         setRole("");
+
+        setUserId("");
     };
 
     return (
@@ -45,6 +55,7 @@ export function AuthProvider({ children }) {
                 token,
                 username,
                 role,
+                userId,
                 login,
                 logout,
             }}

@@ -33,7 +33,7 @@ function LoginPage() {
 
             const data = response.data;
 
-            login(data.token, data.username, data.role);
+            login(data.token, data.username, data.role, data.userId);
 
             navigate("/dashboard");
         } catch (error) {

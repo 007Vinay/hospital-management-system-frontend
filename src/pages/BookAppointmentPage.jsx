@@ -29,10 +29,14 @@ function BookAppointmentPage() {
         e.preventDefault();
 
         try {
-            await api.post("/appointments", {
-                doctorId,
-                appointmentDate,
-            });
+            await api.post(
+                `/appointments?doctorId=${doctorId}`,
+
+                {
+                    appointmentDate,
+                    status: "PENDING",
+                }
+            );
 
             alert("Appointment booked successfully");
 

@@ -1,8 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function Sidebar() {
-    const { role } = useAuth();
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        logout();
+
+        navigate("/login");
+    };
+
+    const { role, logout } = useAuth();
     return (
         <div
             className="
@@ -14,6 +21,17 @@ function Sidebar() {
             "
         >
             <ul className="space-y-4">
+                <li>
+                    <button
+                        onClick={handleLogout}
+                        className="
+                                text-red-600
+                                font-medium
+                            "
+                    >
+                        Logout
+                    </button>
+                </li>
                 <li>
                     <Link to="/dashboard" className="text-blue-600">
                         Dashboard

@@ -32,11 +32,14 @@ function Sidebar() {
                         Logout
                     </button>
                 </li>
-                <li>
-                    <Link to="/dashboard" className="text-blue-600">
-                        Dashboard
-                    </Link>
-                </li>
+
+                {role !== "ROLE_PATIENT" && (
+                    <li>
+                        <Link to="/dashboard" className="text-blue-600">
+                            Dashboard
+                        </Link>
+                    </li>
+                )}
 
                 <li>
                     <Link to="/my-profile" className="text-blue-600">
@@ -50,11 +53,21 @@ function Sidebar() {
                     </Link>
                 </li>
 
-                <li>
-                    <Link to="/patients" className="text-blue-600">
-                        Patients
-                    </Link>
-                </li>
+                {role === "ROLE_PATIENT" && (
+                    <li>
+                        <Link to="/book-appointment" className="text-blue-600">
+                            Book Appointment
+                        </Link>
+                    </li>
+                )}
+
+                {role !== "ROLE_PATIENT" && (
+                    <li>
+                        <Link to="/patients" className="text-blue-600">
+                            Patients
+                        </Link>
+                    </li>
+                )}
 
                 <li>
                     {role === "ROLE_ADMIN" && (
@@ -67,11 +80,7 @@ function Sidebar() {
                         <Link to="/appointments">Appointments</Link>
                     )}
                 </li>
-                <li>
-                    <Link to="/book-appointment" className="text-blue-600">
-                        Book Appointment
-                    </Link>
-                </li>
+                
             </ul>
         </div>
     );

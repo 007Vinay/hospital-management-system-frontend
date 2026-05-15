@@ -9,18 +9,30 @@ import api from "../api/axiosConfig";
 function DashboardPage() {
     const [patientsCount, setPatientsCount] = useState(0);
 
-    const fetchPatientsCount = async () => {
-        try {
-            const response = await api.get("/patients");
+    const [doctorsCount, setDoctorsCount] = useState(0);
 
-            setPatientsCount(response.data.length);
+    const [appointmentsCount, setAppointmentsCount] = useState(0);
+
+    const fetchDashboardStats = async () => {
+        try {
+            const patientsResponse = await api.get("/patients");
+
+            const doctorsResponse = await api.get("/doctors");
+
+            const appointmentsResponse = await api.get("/appointments");
+
+            setPatientsCount(patientsResponse.data.length);
+
+            setDoctorsCount(doctorsResponse.data.length);
+
+            setAppointmentsCount(appointmentsResponse.data.totalElements);
         } catch (error) {
             console.error(error);
         }
     };
 
     useEffect(() => {
-        fetchPatientsCount();
+        fetchDashboardStats();
     }, []);
 
     return (
@@ -51,13 +63,13 @@ function DashboardPage() {
 
                 <DashboardStats
                     title="Total Doctors"
-                    value="0"
+                    value={doctorsCount}
                     color="bg-green-500"
                 />
 
                 <DashboardStats
                     title="Appointments"
-                    value="0"
+                    value={appointmentsCount}
                     color="bg-purple-500"
                 />
             </div>

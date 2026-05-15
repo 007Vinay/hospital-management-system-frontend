@@ -30,7 +30,7 @@ function BookAppointmentPage() {
 
         try {
             await api.post(
-                `/appointments?doctorId=${doctorId}`,
+                `/appointments/book?doctorId=${doctorId}`,
 
                 {
                     appointmentDate,

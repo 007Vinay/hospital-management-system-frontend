@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 
@@ -73,7 +73,7 @@ function AppointmentsPage() {
         try {
             let url = "";
 
-            // DATE RANGE
+            // DATE RANGE FILTER
 
             if (startDate && endDate) {
                 url = `/appointments/date-range?startDate=${startDate}&endDate=${endDate}`;
@@ -87,7 +87,7 @@ function AppointmentsPage() {
                 return;
             }
 
-            // FILTER SEARCH
+            // SEARCH + FILTER + PAGINATION
 
             url = `/appointments/search?page=${page}&size=${size}&sortBy=${sortBy}`;
 
@@ -147,7 +147,7 @@ function AppointmentsPage() {
         fetchDoctors();
     }, []);
 
-    // REAL-TIME FILTERING
+    // REFETCH ON FILTER CHANGE
 
     useEffect(() => {
         fetchAppointments();
@@ -171,7 +171,7 @@ function AppointmentsPage() {
         });
     };
 
-    // CREATE / UPDATE
+    // CREATE / UPDATE APPOINTMENT
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -221,13 +221,15 @@ function AppointmentsPage() {
         }
     };
 
-    // DELETE
+    // OPEN DELETE MODAL
 
     const openDeleteModal = (id) => {
         setSelectedAppointmentId(id);
 
         setIsModalOpen(true);
     };
+
+    // DELETE APPOINTMENT
 
     const handleDeleteAppointment = async (id) => {
         try {
@@ -243,7 +245,7 @@ function AppointmentsPage() {
         }
     };
 
-    // EDIT
+    // EDIT APPOINTMENT
 
     const handleEditAppointment = (appointment) => {
         setFormData({
@@ -292,9 +294,7 @@ function AppointmentsPage() {
             >
                 Appointments
             </h1>
-
-            {/* FORM */}
-
+            {/* APPOINTMENT FORM */}
             <form
                 onSubmit={handleSubmit}
                 className="
@@ -375,9 +375,7 @@ function AppointmentsPage() {
                         : "Create Appointment"}
                 </button>
             </form>
-
             {/* FILTERS */}
-
             <div
                 className="
                     grid
@@ -388,7 +386,7 @@ function AppointmentsPage() {
                     mb-6
                 "
             >
-                {/* STATUS */}
+                {/* STATUS FILTER */}
 
                 <select
                     value={statusFilter}
@@ -469,10 +467,10 @@ function AppointmentsPage() {
                                         setPage(0);
                                     }}
                                     className="
-                                        p-3
-                                        hover:bg-gray-100
-                                        cursor-pointer
-                                    "
+                                            p-3
+                                            hover:bg-gray-100
+                                            cursor-pointer
+                                        "
                                 >
                                     {doctor.name}
                                 </div>
@@ -537,10 +535,10 @@ function AppointmentsPage() {
                                         setPage(0);
                                     }}
                                     className="
-                                        p-3
-                                        hover:bg-gray-100
-                                        cursor-pointer
-                                    "
+                                            p-3
+                                            hover:bg-gray-100
+                                            cursor-pointer
+                                        "
                                 >
                                     {patient.name}
                                 </div>
@@ -548,9 +546,7 @@ function AppointmentsPage() {
                         </div>
                     )}
                 </div>
-
                 {/* START DATE */}
-
                 <div>
                     <label
                         className="
@@ -579,9 +575,7 @@ function AppointmentsPage() {
                         "
                     />
                 </div>
-
                 {/* END DATE */}
-
                 <div>
                     <label
                         className="
@@ -610,31 +604,40 @@ function AppointmentsPage() {
                         "
                     />
                 </div>
-
                 {/* SORT */}
+                <div>
+                    <label
+                        className="
+                            block
+                            mb-1
+                            font-medium
+                        "
+                    >
+                        Sort
+                    </label>
 
-                <select
-                    value={sortBy}
-                    onChange={(e) => {
-                        setSortBy(e.target.value);
+                    <select
+                        value={sortBy}
+                        onChange={(e) => {
+                            setSortBy(e.target.value);
 
-                        setPage(0);
-                    }}
-                    className="
-                        border
-                        p-3
-                        rounded-lg
-                        bg-white
-                    "
-                >
-                    <option value="appointmentDate">Sort By Date</option>
+                            setPage(0);
+                        }}
+                        className="
+                            border
+                            p-3
+                            rounded-lg
+                            bg-white
+                            w-full
+                        "
+                    >
+                        <option value="appointmentDate">Sort By Date</option>
 
-                    <option value="status">Sort By Status</option>
-                </select>
+                        <option value="status">Sort By Status</option>
+                    </select>
+                </div>
             </div>
-
             {/* CLEAR FILTER */}
-
             <div className="mb-6">
                 <button
                     onClick={handleClearFilters}
@@ -650,9 +653,7 @@ function AppointmentsPage() {
                     Clear Filters
                 </button>
             </div>
-
-            {/* TABLE */}
-
+            {/* APPOINTMENTS TABLE */}
             <div
                 className="
                     overflow-x-auto
@@ -672,6 +673,14 @@ function AppointmentsPage() {
                             <th className="p-4 border">ID</th>
 
                             <th className="p-4 border">Patient</th>
+
+                            <th className="p-4 border">Age</th>
+
+                            <th className="p-4 border">Gender</th>
+
+                            <th className="p-4 border">Disease</th>
+
+                            <th className="p-4 border">Phone</th>
 
                             <th className="p-4 border">Doctor</th>
 
@@ -696,6 +705,22 @@ function AppointmentsPage() {
 
                                     <td className="p-4 border">
                                         {a.patientName}
+                                    </td>
+
+                                    <td className="p-4 border">
+                                        {a.patientAge}
+                                    </td>
+
+                                    <td className="p-4 border">
+                                        {a.patientGender}
+                                    </td>
+
+                                    <td className="p-4 border">
+                                        {a.patientDisease}
+                                    </td>
+
+                                    <td className="p-4 border">
+                                        {a.patientPhone}
                                     </td>
 
                                     <td className="p-4 border">
@@ -747,7 +772,7 @@ function AppointmentsPage() {
                         ) : (
                             <tr>
                                 <td
-                                    colSpan="6"
+                                    colSpan="10"
                                     className="
                                         text-center
                                         p-6
@@ -760,9 +785,7 @@ function AppointmentsPage() {
                     </tbody>
                 </table>
             </div>
-
             {/* PAGINATION */}
-
             <div
                 className="
                     flex
@@ -808,9 +831,7 @@ function AppointmentsPage() {
                     Next
                 </button>
             </div>
-
-            {/* DELETE MODAL */}
-
+            {/* DELETE CONFIRMATION MODAL */}
             <ConfirmModal
                 isOpen={isModalOpen}
                 title="Delete Appointment"

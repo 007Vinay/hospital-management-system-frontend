@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import BookAppointmentPage from "../pages/BookAppointmentPage";
-import ProtectedRoute from "../components/ProtectedRoute";
 import RegisterPage from "../pages/RegisterPage";
 import MyProfilePage from "../pages/MyProfilePage";
 import LoginPage from "../pages/LoginPage";
@@ -9,6 +8,7 @@ import DashboardPage from "../pages/DashboardPage";
 import PatientsPage from "../pages/PatientsPage";
 import DoctorsPage from "../pages/DoctorsPage";
 import MyAppointmentsPage from "../pages/MyAppointmentsPage";
+import ProtectedRoute from "./ProtectedRoute";
 import AppointmentsPage from "../pages/AppointmentsPage";
 
 function AppRoutes() {
@@ -22,30 +22,63 @@ function AppRoutes() {
                 <Route path="/" element={<Navigate to="/login" />} />
 
                 <Route element={<ProtectedRoute />}>
-                    <Route path="/my-profile" element={<MyProfilePage />} />
-
-                    <Route path="/dashboard" element={<DashboardPage />} />
-
-                    <Route path="/patients" element={<PatientsPage />} />
+                    <Route
+                        element={
+                            <ProtectedRoute
+                                allowedRoles={["ROLE_ADMIN", "ROLE_DOCTOR"]}
+                            />
+                        }
+                    >
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                    </Route>
 
                     <Route
-                        path="/my-appointments"
-                        element={<MyAppointmentsPage />}
-                    />
+                        element={
+                            <ProtectedRoute
+                                allowedRoles={["ROLE_ADMIN", "ROLE_DOCTOR"]}
+                            />
+                        }
+                    >
+                        <Route path="/patients" element={<PatientsPage />} />
+                    </Route>
                     <Route
-                        path="/appointments"
-                        element={<AppointmentsPage />}
-                    />
-                </Route>
-                <Route
-                    path="/book-appointment"
-                    element={<BookAppointmentPage />}
-                />
+                        element={
+                            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]} />
+                        }
+                    >
+                        <Route path="/doctors" element={<DoctorsPage />} />
+                    </Route>
 
-                <Route
-                    element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]} />}
-                >
-                    <Route path="/doctors" element={<DoctorsPage />} />
+                    <Route
+                        element={
+                            <ProtectedRoute
+                                allowedRoles={["ROLE_ADMIN", "ROLE_DOCTOR"]}
+                            />
+                        }
+                    >
+                        <Route
+                            path="/appointments"
+                            element={<AppointmentsPage />}
+                        />
+                    </Route>
+
+                    <Route
+                        element={
+                            <ProtectedRoute allowedRoles={["ROLE_PATIENT"]} />
+                        }
+                    >
+                        <Route path="/my-profile" element={<MyProfilePage />} />
+
+                        <Route
+                            path="/my-appointments"
+                            element={<MyAppointmentsPage />}
+                        />
+
+                        <Route
+                            path="/book-appointment"
+                            element={<BookAppointmentPage />}
+                        />
+                    </Route>
                 </Route>
 
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />

@@ -5,14 +5,15 @@ import { useAuth } from "../context/AuthContext";
 function ProtectedRoute({ allowedRoles }) {
     const { token, role } = useAuth();
 
-    // User not logged in
+    //User not logged in
     if (!token) {
-        return <Navigate to="/login" />;
+        return <Navigate to="/" />;
     }
 
-    // Role not authorized
+    //Role not authorized
     if (allowedRoles && !allowedRoles.includes(role)) {
-        alert("403 Unauthorized Access");
+        alert("403 Unauthorized");
+
         return <Navigate to="/dashboard" />;
     }
 

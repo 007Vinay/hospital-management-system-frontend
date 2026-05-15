@@ -35,7 +35,11 @@ function LoginPage() {
 
             login(data.token, data.username, data.role, data.userId);
 
-            navigate("/dashboard");
+            if (data.role === "ROLE_PATIENT") {
+                navigate("/my-profile");
+            } else {
+                navigate("/dashboard");
+            }
         } catch (error) {
             console.error(error);
 

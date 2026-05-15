@@ -283,6 +283,20 @@ function AppointmentsPage() {
         setPage(0);
     };
 
+    const handleStatusUpdate = async (id, status) => {
+        try {
+            await api.patch(`/appointments/${id}/status?status=${status}`);
+
+            toast.success(`Appointment ${status.toLowerCase()} successfully`);
+
+            fetchAppointments();
+        } catch (error) {
+            console.error(error);
+
+            toast.error("Failed to update status");
+        }
+    };
+
     return (
         <DashboardLayout>
             <h1
@@ -733,39 +747,142 @@ function AppointmentsPage() {
 
                                     <td className="p-4 border">{a.status}</td>
 
-                                    <td className="p-4 border">
-                                        <button
-                                            onClick={() =>
-                                                handleEditAppointment(a)
-                                            }
-                                            className="
-                                                bg-yellow-500
-                                                hover:bg-yellow-600
-                                                text-white
-                                                px-3
-                                                py-1
-                                                rounded-lg
-                                                mr-2
-                                            "
-                                        >
-                                            Edit
-                                        </button>
+                                    <td className="p-4 border min-w-[320px]">
+                                        <div className="flex gap-2 whitespace-nowrap">
+                                            {/* EDIT */}
 
-                                        <button
-                                            onClick={() =>
-                                                openDeleteModal(a.id)
-                                            }
-                                            className="
-                                                bg-red-500
-                                                hover:bg-red-600
-                                                text-white
-                                                px-3
-                                                py-1
-                                                rounded-lg
-                                            "
-                                        >
-                                            Delete
-                                        </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleEditAppointment(a)
+                                                }
+                                                className="
+                                                    bg-yellow-500
+                                                    hover:bg-yellow-600
+                                                    text-white
+                                                    px-3
+                                                    py-1
+                                                    rounded-lg
+                                                    mr-2
+                                                    mb-2
+                                                "
+                                            >
+                                                Edit
+                                            </button>
+
+                                            {/* DELETE */}
+
+                                            <button
+                                                onClick={() =>
+                                                    openDeleteModal(a.id)
+                                                }
+                                                className="
+                                                    bg-red-500
+                                                    hover:bg-red-600
+                                                    text-white
+                                                    px-3
+                                                    py-1
+                                                    rounded-lg
+                                                    mr-2
+                                                    mb-2
+                                                "
+                                            >
+                                                Delete
+                                            </button>
+
+                                            {/* PENDING ACTIONS */}
+
+                                            {a.status === "PENDING" && (
+                                                <>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleStatusUpdate(
+                                                                a.id,
+                                                                "SCHEDULED"
+                                                            )
+                                                        }
+                                                        className="
+                                                            bg-green-600
+                                                            hover:bg-green-700
+                                                            text-white
+                                                            px-3
+                                                            py-1
+                                                            rounded-lg
+                                                            mr-2
+                                                            mb-2
+                                                        "
+                                                    >
+                                                        Approve
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() =>
+                                                            handleStatusUpdate(
+                                                                a.id,
+                                                                "REJECTED"
+                                                            )
+                                                        }
+                                                        className="
+                                                            bg-gray-600
+                                                            hover:bg-gray-700
+                                                            text-white
+                                                            px-3
+                                                            py-1
+                                                            rounded-lg
+                                                            mb-2
+                                                        "
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </>
+                                            )}
+
+                                            {/* SCHEDULED ACTIONS */}
+
+                                            {a.status === "SCHEDULED" && (
+                                                <>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleStatusUpdate(
+                                                                a.id,
+                                                                "COMPLETED"
+                                                            )
+                                                        }
+                                                        className="
+                                                            bg-blue-600
+                                                            hover:bg-blue-700
+                                                            text-white
+                                                            px-3
+                                                            py-1
+                                                            rounded-lg
+                                                            mr-2
+                                                            mb-2
+                                                        "
+                                                    >
+                                                        Complete
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() =>
+                                                            handleStatusUpdate(
+                                                                a.id,
+                                                                "CANCELLED"
+                                                            )
+                                                        }
+                                                        className="
+                                                            bg-orange-500
+                                                            hover:bg-orange-600
+                                                            text-white
+                                                            px-3
+                                                            py-1
+                                                            rounded-lg
+                                                            mb-2
+                                                        "
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))

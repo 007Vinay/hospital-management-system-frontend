@@ -41,17 +41,21 @@ function Sidebar() {
                     </li>
                 )}
 
-                <li>
-                    <Link to="/my-profile" className="text-blue-600">
-                        My Profile
-                    </Link>
-                </li>
+                {role === "ROLE_PATIENT" && (
+                    <li>
+                        <Link to="/my-profile" className="text-blue-600">
+                            My Profile
+                        </Link>
+                    </li>
+                )}
 
-                <li>
-                    <Link to="/my-appointments" className="text-blue-600">
-                        My Appointments
-                    </Link>
-                </li>
+                {role === "ROLE_PATIENT" && (
+                    <li>
+                        <Link to="/my-appointments" className="text-blue-600">
+                            My Appointments
+                        </Link>
+                    </li>
+                )}
 
                 {role === "ROLE_PATIENT" && (
                     <li>
@@ -80,7 +84,6 @@ function Sidebar() {
                         <Link to="/appointments">Appointments</Link>
                     )}
                 </li>
-                
             </ul>
         </div>
     );

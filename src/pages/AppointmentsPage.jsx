@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-
+import LoadingSpinner from "../components/LoadingSpinner";
 import DashboardLayout from "../layouts/DashboardLayout";
-
+import EmptyState from "../components/EmptyState";
 import api from "../api/axiosConfig";
 
 import { toast } from "react-toastify";
@@ -756,16 +756,8 @@ function AppointmentsPage() {
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td
-                                    colSpan="10"
-                                    className="
-                                        text-center
-                                        p-8
-                                        text-blue-600
-                                        font-semibold
-                                    "
-                                >
-                                    Loading appointments...
+                                <td colSpan="10">
+                                    <LoadingSpinner message="Loading appointments..." />
                                 </td>
                             </tr>
                         ) : appointments.length > 0 ? (
@@ -961,14 +953,8 @@ function AppointmentsPage() {
                             ))
                         ) : (
                             <tr>
-                                <td
-                                    colSpan="10"
-                                    className="
-                                        text-center
-                                        p-6
-                                    "
-                                >
-                                    No appointments found
+                                <td colSpan="10">
+                                    <EmptyState message="No appointments found" />
                                 </td>
                             </tr>
                         )}

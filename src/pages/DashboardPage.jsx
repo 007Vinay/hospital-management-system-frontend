@@ -36,11 +36,11 @@ function DashboardPage() {
                 "/appointments?page=0&size=1000"
             );
 
-            const appointments = appointmentsResponse.data.content || [];
+            const appointmentsData = appointmentsResponse.data.content || [];
 
-            setRecentAppointments(appointments.slice(0, 5));
+            setRecentAppointments(appointmentsData.slice(0, 5));
 
-            const statusCounts = appointments.reduce((acc, appointment) => {
+            const statusCounts = appointmentsData.reduce((acc, appointment) => {
                 acc[appointment.status] = (acc[appointment.status] || 0) + 1;
 
                 return acc;

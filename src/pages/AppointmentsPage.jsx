@@ -11,6 +11,8 @@ import ConfirmModal from "../components/ConfirmModal";
 function AppointmentsPage() {
     const [appointments, setAppointments] = useState([]);
 
+    const [loading, setLoading] = useState(false);
+
     const [patients, setPatients] = useState([]);
 
     const [doctors, setDoctors] = useState([]);
@@ -70,6 +72,7 @@ function AppointmentsPage() {
     // FETCH APPOINTMENTS
 
     const fetchAppointments = async () => {
+        setLoading(true);
         try {
             let url = "";
 
@@ -83,6 +86,8 @@ function AppointmentsPage() {
                 setAppointments(response.data);
 
                 setTotalPages(1);
+
+                setLoading(false);
 
                 return;
             }
@@ -108,10 +113,13 @@ function AppointmentsPage() {
             setAppointments(response.data.content || []);
 
             setTotalPages(response.data.totalPages || 0);
+
+            setLoading(false);
         } catch (error) {
             console.error(error);
 
             toast.error("Failed to fetch appointments");
+            setLoading(false);
         }
     };
 
@@ -746,7 +754,21 @@ function AppointmentsPage() {
                     </thead>
 
                     <tbody>
-                        {appointments.length > 0 ? (
+                        {loading ? (
+                            <tr>
+                                <td
+                                    colSpan="10"
+                                    className="
+                                        text-center
+                                        p-8
+                                        text-blue-600
+                                        font-semibold
+                                    "
+                                >
+                                    Loading appointments...
+                                </td>
+                            </tr>
+                        ) : appointments.length > 0 ? (
                             appointments.map((a) => (
                                 <tr
                                     key={a.id}

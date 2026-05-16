@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 import DashboardStats from "../components/DashboardStats";
-
+import { Link } from "react-router-dom";
 import api from "../api/axiosConfig";
 
 import {
@@ -77,15 +77,88 @@ function DashboardPage() {
 
     return (
         <DashboardLayout>
-            <h1
+            <div
                 className="
-                    text-3xl
-                    font-bold
-                    mb-6
-                "
+                        bg-gradient-to-r
+                        from-blue-600
+                        to-indigo-700
+                        text-white
+                        p-8
+                        rounded-2xl
+                        shadow-lg
+                        mb-8
+                    "
             >
-                Dashboard
-            </h1>
+                <h1
+                    className="
+                            text-4xl
+                            font-bold
+                            mb-3
+                        "
+                >
+                    Welcome to HMS Dashboard
+                </h1>
+
+                <p
+                    className="
+                            text-lg
+                            text-blue-100
+                            mb-6
+                        "
+                >
+                    Manage patients, doctors, and appointments efficiently.
+                </p>
+
+                <div className="flex flex-wrap gap-4">
+                    <Link
+                        to="/patients"
+                        className="
+                                bg-white
+                                text-blue-700
+                                px-5
+                                py-2
+                                rounded-lg
+                                font-semibold
+                                hover:bg-blue-100
+                                transition
+                            "
+                    >
+                        Manage Patients
+                    </Link>
+
+                    <Link
+                        to="/doctors"
+                        className="
+                                bg-white
+                                text-green-700
+                                px-5
+                                py-2
+                                rounded-lg
+                                font-semibold
+                                hover:bg-green-100
+                                transition
+                            "
+                    >
+                        Manage Doctors
+                    </Link>
+
+                    <Link
+                        to="/appointments"
+                        className="
+                                bg-white
+                                text-purple-700
+                                px-5
+                                py-2
+                                rounded-lg
+                                font-semibold
+                                hover:bg-purple-100
+                                transition
+                            "
+                    >
+                        Manage Appointments
+                    </Link>
+                </div>
+            </div>
 
             <div
                 className="

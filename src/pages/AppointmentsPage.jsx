@@ -297,6 +297,13 @@ function AppointmentsPage() {
         }
     };
 
+    const role = localStorage.getItem("role");
+
+    const isAdmin = role === "ROLE_ADMIN";
+
+    const isDoctor = role === "ROLE_DOCTOR";
+
+    const isPatient = role === "ROLE_PATIENT";
     return (
         <DashboardLayout>
             <h1
@@ -716,46 +723,39 @@ function AppointmentsPage() {
                                     "
                                 >
                                     <td className="p-4 border">{a.id}</td>
-
                                     <td className="p-4 border">
                                         {a.patientName}
                                     </td>
-
                                     <td className="p-4 border">
                                         {a.patientAge}
                                     </td>
-
                                     <td className="p-4 border">
                                         {a.patientGender}
                                     </td>
-
                                     <td className="p-4 border">
                                         {a.patientDisease}
                                     </td>
-
                                     <td className="p-4 border">
                                         {a.patientPhone}
                                     </td>
-
                                     <td className="p-4 border">
                                         {a.doctorName}
                                     </td>
-
                                     <td className="p-4 border">
                                         {a.appointmentDate}
                                     </td>
-
                                     <td className="p-4 border">{a.status}</td>
 
                                     <td className="p-4 border min-w-[320px]">
                                         <div className="flex gap-2 whitespace-nowrap">
                                             {/* EDIT */}
 
-                                            <button
-                                                onClick={() =>
-                                                    handleEditAppointment(a)
-                                                }
-                                                className="
+                                            {(isAdmin || isDoctor) && (
+                                                <button
+                                                    onClick={() =>
+                                                        handleEditAppointment(a)
+                                                    }
+                                                    className="
                                                     bg-yellow-500
                                                     hover:bg-yellow-600
                                                     text-white
@@ -765,17 +765,18 @@ function AppointmentsPage() {
                                                     mr-2
                                                     mb-2
                                                 "
-                                            >
-                                                Edit
-                                            </button>
-
+                                                >
+                                                    Edit
+                                                </button>
+                                            )}
                                             {/* DELETE */}
 
-                                            <button
-                                                onClick={() =>
-                                                    openDeleteModal(a.id)
-                                                }
-                                                className="
+                                            {isAdmin && (
+                                                <button
+                                                    onClick={() =>
+                                                        openDeleteModal(a.id)
+                                                    }
+                                                    className="
                                                     bg-red-500
                                                     hover:bg-red-600
                                                     text-white
@@ -785,22 +786,24 @@ function AppointmentsPage() {
                                                     mr-2
                                                     mb-2
                                                 "
-                                            >
-                                                Delete
-                                            </button>
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
 
                                             {/* PENDING ACTIONS */}
 
-                                            {a.status === "PENDING" && (
-                                                <>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleStatusUpdate(
-                                                                a.id,
-                                                                "SCHEDULED"
-                                                            )
-                                                        }
-                                                        className="
+                                            {(isAdmin || isDoctor) &&
+                                                a.status === "PENDING" && (
+                                                    <>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleStatusUpdate(
+                                                                    a.id,
+                                                                    "SCHEDULED"
+                                                                )
+                                                            }
+                                                            className="
                                                             bg-green-600
                                                             hover:bg-green-700
                                                             text-white
@@ -810,18 +813,18 @@ function AppointmentsPage() {
                                                             mr-2
                                                             mb-2
                                                         "
-                                                    >
-                                                        Approve
-                                                    </button>
+                                                        >
+                                                            Approve
+                                                        </button>
 
-                                                    <button
-                                                        onClick={() =>
-                                                            handleStatusUpdate(
-                                                                a.id,
-                                                                "REJECTED"
-                                                            )
-                                                        }
-                                                        className="
+                                                        <button
+                                                            onClick={() =>
+                                                                handleStatusUpdate(
+                                                                    a.id,
+                                                                    "REJECTED"
+                                                                )
+                                                            }
+                                                            className="
                                                             bg-gray-600
                                                             hover:bg-gray-700
                                                             text-white
@@ -830,24 +833,25 @@ function AppointmentsPage() {
                                                             rounded-lg
                                                             mb-2
                                                         "
-                                                    >
-                                                        Reject
-                                                    </button>
-                                                </>
-                                            )}
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </>
+                                                )}
 
                                             {/* SCHEDULED ACTIONS */}
 
-                                            {a.status === "SCHEDULED" && (
-                                                <>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleStatusUpdate(
-                                                                a.id,
-                                                                "COMPLETED"
-                                                            )
-                                                        }
-                                                        className="
+                                            {(isAdmin || isDoctor) &&
+                                                a.status === "SCHEDULED" && (
+                                                    <>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleStatusUpdate(
+                                                                    a.id,
+                                                                    "COMPLETED"
+                                                                )
+                                                            }
+                                                            className="
                                                             bg-blue-600
                                                             hover:bg-blue-700
                                                             text-white
@@ -857,18 +861,19 @@ function AppointmentsPage() {
                                                             mr-2
                                                             mb-2
                                                         "
-                                                    >
-                                                        Complete
-                                                    </button>
+                                                        >
+                                                            Complete
+                                                        </button>
 
-                                                    <button
-                                                        onClick={() =>
-                                                            handleStatusUpdate(
-                                                                a.id,
-                                                                "CANCELLED"
-                                                            )
-                                                        }
-                                                        className="
+                                                        {isAdmin && (
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleStatusUpdate(
+                                                                        a.id,
+                                                                        "CANCELLED"
+                                                                    )
+                                                                }
+                                                                className="
                                                             bg-orange-500
                                                             hover:bg-orange-600
                                                             text-white
@@ -877,11 +882,12 @@ function AppointmentsPage() {
                                                             rounded-lg
                                                             mb-2
                                                         "
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                </>
-                                            )}
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                )}
                                         </div>
                                     </td>
                                 </tr>

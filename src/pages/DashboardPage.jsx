@@ -75,6 +75,28 @@ function DashboardPage() {
         return new Date(date).toLocaleString();
     };
 
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case "SCHEDULED":
+                return "bg-blue-100 text-blue-700";
+
+            case "COMPLETED":
+                return "bg-green-100 text-green-700";
+
+            case "PENDING":
+                return "bg-yellow-100 text-yellow-700";
+
+            case "CANCELLED":
+                return "bg-red-100 text-red-700";
+
+            case "REJECTED":
+                return "bg-gray-200 text-gray-700";
+
+            default:
+                return "bg-gray-100 text-gray-700";
+        }
+    };
+
     return (
         <DashboardLayout>
             <div
@@ -231,19 +253,19 @@ function DashboardPage() {
                 </div>
                 <div
                     className="
-        bg-white
-        p-6
-        rounded-xl
-        shadow-md
-        mt-8
-    "
+                            bg-white
+                            p-6
+                            rounded-xl
+                            shadow-md
+                            mt-8
+                        "
                 >
                     <h2
                         className="
-            text-xl
-            font-bold
-            mb-6
-        "
+                                text-xl
+                                font-bold
+                                mb-6
+                            "
                     >
                         Recent Appointments
                     </h2>
@@ -283,7 +305,18 @@ function DashboardPage() {
                                         </td>
 
                                         <td className="p-3 border">
-                                            {appointment.status}
+                                            <span
+                                                className={`
+                                                            px-3
+                                                            py-1
+                                                            rounded-full
+                                                            text-sm
+                                                            font-semibold
+                                                            ${getStatusBadge(appointment.status)}
+                                                        `}
+                                            >
+                                                {appointment.status}
+                                            </span>
                                         </td>
                                     </tr>
                                 ))}

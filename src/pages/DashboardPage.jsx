@@ -6,6 +6,15 @@ import DashboardStats from "../components/DashboardStats";
 
 import api from "../api/axiosConfig";
 
+import {
+    PieChart,
+    Pie,
+    Cell,
+    Tooltip,
+    ResponsiveContainer,
+    Legend,
+} from "recharts";
+
 function DashboardPage() {
     const [patientsCount, setPatientsCount] = useState(0);
 
@@ -13,13 +22,34 @@ function DashboardPage() {
 
     const [appointmentsCount, setAppointmentsCount] = useState(0);
 
+    const [chartData, setChartData] = useState([]);
+
     const fetchDashboardStats = async () => {
         try {
             const patientsResponse = await api.get("/patients");
 
             const doctorsResponse = await api.get("/doctors");
 
-            const appointmentsResponse = await api.get("/appointments");
+            const appointmentsResponse = await api.get(
+                "/appointments?page=0&size=1000"
+            );
+
+            const appointments = appointmentsResponse.data.content || [];
+
+            const statusCounts = appointments.reduce((acc, appointment) => {
+                acc[appointment.status] = (acc[appointment.status] || 0) + 1;
+
+                return acc;
+            }, {});
+
+            const formattedChartData = Object.keys(statusCounts).map(
+                (status) => ({
+                    name: status,
+                    value: statusCounts[status],
+                })
+            );
+
+            setChartData(formattedChartData);
 
             setPatientsCount(patientsResponse.data.length);
 
@@ -34,6 +64,8 @@ function DashboardPage() {
     useEffect(() => {
         fetchDashboardStats();
     }, []);
+
+    const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#6B7280"];
 
     return (
         <DashboardLayout>
@@ -72,6 +104,50 @@ function DashboardPage() {
                     value={appointmentsCount}
                     color="bg-purple-500"
                 />
+            </div>
+            <div
+                className="
+        bg-white
+        p-6
+        rounded-xl
+        shadow-md
+        mt-8
+    "
+            >
+                <h2
+                    className="
+            text-xl
+            font-bold
+            mb-6
+        "
+                >
+                    Appointments Overview
+                </h2>
+
+                <div className="h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={chartData}
+                                dataKey="value"
+                                nameKey="name"
+                                outerRadius={140}
+                                label
+                            >
+                                {chartData.map((entry, index) => (
+                                    <Cell
+                                        key={index}
+                                        fill={COLORS[index % COLORS.length]}
+                                    />
+                                ))}
+                            </Pie>
+
+                            <Tooltip />
+
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
         </DashboardLayout>
     );

@@ -24,6 +24,8 @@ function DashboardPage() {
 
     const [chartData, setChartData] = useState([]);
 
+    const [recentAppointments, setRecentAppointments] = useState([]);
+
     const fetchDashboardStats = async () => {
         try {
             const patientsResponse = await api.get("/patients");
@@ -35,6 +37,8 @@ function DashboardPage() {
             );
 
             const appointments = appointmentsResponse.data.content || [];
+
+            setRecentAppointments(appointments.slice(0, 5));
 
             const statusCounts = appointments.reduce((acc, appointment) => {
                 acc[appointment.status] = (acc[appointment.status] || 0) + 1;
@@ -66,6 +70,10 @@ function DashboardPage() {
     }, []);
 
     const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#6B7280"];
+
+    const formatDate = (date) => {
+        return new Date(date).toLocaleString();
+    };
 
     return (
         <DashboardLayout>
@@ -147,6 +155,68 @@ function DashboardPage() {
                             <Legend />
                         </PieChart>
                     </ResponsiveContainer>
+                </div>
+                <div
+                    className="
+        bg-white
+        p-6
+        rounded-xl
+        shadow-md
+        mt-8
+    "
+                >
+                    <h2
+                        className="
+            text-xl
+            font-bold
+            mb-6
+        "
+                    >
+                        Recent Appointments
+                    </h2>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                            <thead className="bg-gray-100">
+                                <tr>
+                                    <th className="p-3 border">Patient</th>
+
+                                    <th className="p-3 border">Doctor</th>
+
+                                    <th className="p-3 border">Date</th>
+
+                                    <th className="p-3 border">Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {recentAppointments.map((appointment) => (
+                                    <tr
+                                        key={appointment.id}
+                                        className="hover:bg-gray-50"
+                                    >
+                                        <td className="p-3 border">
+                                            {appointment.patientName}
+                                        </td>
+
+                                        <td className="p-3 border">
+                                            {appointment.doctorName}
+                                        </td>
+
+                                        <td className="p-3 border">
+                                            {formatDate(
+                                                appointment.appointmentDate
+                                            )}
+                                        </td>
+
+                                        <td className="p-3 border">
+                                            {appointment.status}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </DashboardLayout>

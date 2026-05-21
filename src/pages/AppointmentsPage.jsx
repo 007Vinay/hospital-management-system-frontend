@@ -59,6 +59,8 @@ function AppointmentsPage() {
 
     const [submitting, setSubmitting] = useState(false);
 
+    const [actionLoadingId, setActionLoadingId] = useState(null);
+
     // FILTERED DOCTORS
 
     const filteredDoctors = doctors.filter((doctor) =>
@@ -297,6 +299,7 @@ function AppointmentsPage() {
     };
 
     const handleStatusUpdate = async (id, status) => {
+        setActionLoadingId(id);
         try {
             await api.patch(`/appointments/${id}/status?status=${status}`);
 
@@ -307,6 +310,8 @@ function AppointmentsPage() {
             console.error(error);
 
             toast.error("Failed to update status");
+        } finally {
+            setActionLoadingId(null);
         }
     };
 
@@ -843,6 +848,9 @@ function AppointmentsPage() {
                                                     onClick={() =>
                                                         openDeleteModal(a.id)
                                                     }
+                                                    disabled={
+                                                        actionLoadingId === a.id
+                                                    }
                                                     className="
                                                     bg-red-500
                                                     hover:bg-red-600
@@ -854,7 +862,9 @@ function AppointmentsPage() {
                                                     mb-2
                                                 "
                                                 >
-                                                    Delete
+                                                    {actionLoadingId === a.id
+                                                        ? "Processing..."
+                                                        : "Delete"}
                                                 </button>
                                             )}
 
@@ -870,6 +880,10 @@ function AppointmentsPage() {
                                                                     "SCHEDULED"
                                                                 )
                                                             }
+                                                            disabled={
+                                                                actionLoadingId ===
+                                                                a.id
+                                                            }
                                                             className="
                                                             bg-green-600
                                                             hover:bg-green-700
@@ -881,7 +895,10 @@ function AppointmentsPage() {
                                                             mb-2
                                                         "
                                                         >
-                                                            Approve
+                                                            {actionLoadingId ===
+                                                            a.id
+                                                                ? "Processing..."
+                                                                : "Approve"}
                                                         </button>
 
                                                         <button
@@ -890,6 +907,10 @@ function AppointmentsPage() {
                                                                     a.id,
                                                                     "REJECTED"
                                                                 )
+                                                            }
+                                                            disabled={
+                                                                actionLoadingId ===
+                                                                a.id
                                                             }
                                                             className="
                                                             bg-gray-600
@@ -901,7 +922,10 @@ function AppointmentsPage() {
                                                             mb-2
                                                         "
                                                         >
-                                                            Reject
+                                                            {actionLoadingId ===
+                                                            a.id
+                                                                ? "Processing..."
+                                                                : "Reject"}
                                                         </button>
                                                     </>
                                                 )}
@@ -918,6 +942,10 @@ function AppointmentsPage() {
                                                                     "COMPLETED"
                                                                 )
                                                             }
+                                                            disabled={
+                                                                actionLoadingId ===
+                                                                a.id
+                                                            }
                                                             className="
                                                             bg-blue-600
                                                             hover:bg-blue-700
@@ -929,7 +957,10 @@ function AppointmentsPage() {
                                                             mb-2
                                                         "
                                                         >
-                                                            Complete
+                                                            {actionLoadingId ===
+                                                            a.id
+                                                                ? "Processing..."
+                                                                : "Complete"}
                                                         </button>
 
                                                         {isAdmin && (
@@ -939,6 +970,10 @@ function AppointmentsPage() {
                                                                         a.id,
                                                                         "CANCELLED"
                                                                     )
+                                                                }
+                                                                disabled={
+                                                                    actionLoadingId ===
+                                                                    a.id
                                                                 }
                                                                 className="
                                                             bg-orange-500
@@ -950,7 +985,10 @@ function AppointmentsPage() {
                                                             mb-2
                                                         "
                                                             >
-                                                                Cancel
+                                                                {actionLoadingId ===
+                                                                a.id
+                                                                    ? "Processing..."
+                                                                    : "Cancel"}
                                                             </button>
                                                         )}
                                                     </>

@@ -57,6 +57,8 @@ function AppointmentsPage() {
         appointmentDate: "",
     });
 
+    const [submitting, setSubmitting] = useState(false);
+
     // FILTERED DOCTORS
 
     const filteredDoctors = doctors.filter((doctor) =>
@@ -183,6 +185,7 @@ function AppointmentsPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
 
         try {
             if (editingAppointmentId) {
@@ -226,6 +229,8 @@ function AppointmentsPage() {
             console.error(error);
 
             toast.error("Appointment failed");
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -422,6 +427,7 @@ function AppointmentsPage() {
 
                 <button
                     type="submit"
+                    disabled={submitting}
                     className="
                         bg-blue-600
                         hover:bg-blue-700
@@ -431,9 +437,11 @@ function AppointmentsPage() {
                         rounded-lg
                     "
                 >
-                    {editingAppointmentId
-                        ? "Update Appointment"
-                        : "Create Appointment"}
+                    {submitting
+                        ? "Processing..."
+                        : editingAppointmentId
+                          ? "Update Appointment"
+                          : "Create Appointment"}
                 </button>
             </form>
             {/* FILTERS */}

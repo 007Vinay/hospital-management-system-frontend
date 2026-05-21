@@ -26,8 +26,11 @@ function DashboardPage() {
 
     const [recentAppointments, setRecentAppointments] = useState([]);
 
+    const [loading, setLoading] = useState(true);
+
     const fetchDashboardStats = async () => {
         try {
+            setLoading(true);
             const patientsResponse = await api.get("/patients");
 
             const doctorsResponse = await api.get("/doctors");
@@ -60,6 +63,8 @@ function DashboardPage() {
             setDoctorsCount(doctorsResponse.data.length);
 
             setAppointmentsCount(appointmentsResponse.data.totalElements);
+
+            setLoading(false);
         } catch (error) {
             console.error(error);
         }
@@ -99,8 +104,24 @@ function DashboardPage() {
 
     return (
         <DashboardLayout>
-            <div
-                className="
+            {loading ? (
+                <div
+                    className="
+                        flex
+                        justify-center
+                        items-center
+                        h-[70vh]
+                        text-2xl
+                        font-bold
+                        text-blue-600
+                    "
+                >
+                    Loading dashboard...
+                </div>
+            ) : (
+                <>
+                    <div
+                        className="
                         bg-gradient-to-r
                         from-blue-600
                         to-indigo-700
@@ -110,31 +131,32 @@ function DashboardPage() {
                         shadow-lg
                         mb-8
                     "
-            >
-                <h1
-                    className="
+                    >
+                        <h1
+                            className="
                             text-4xl
                             font-bold
                             mb-3
                         "
-                >
-                    Welcome to HMS Dashboard
-                </h1>
+                        >
+                            Welcome to HMS Dashboard
+                        </h1>
 
-                <p
-                    className="
+                        <p
+                            className="
                             text-lg
                             text-blue-100
                             mb-6
                         "
-                >
-                    Manage patients, doctors, and appointments efficiently.
-                </p>
+                        >
+                            Manage patients, doctors, and appointments
+                            efficiently.
+                        </p>
 
-                <div className="flex flex-wrap gap-4">
-                    <Link
-                        to="/patients"
-                        className="
+                        <div className="flex flex-wrap gap-4">
+                            <Link
+                                to="/patients"
+                                className="
                                 bg-white
                                 text-blue-700
                                 px-5
@@ -144,13 +166,13 @@ function DashboardPage() {
                                 hover:bg-blue-100
                                 transition
                             "
-                    >
-                        Manage Patients
-                    </Link>
+                            >
+                                Manage Patients
+                            </Link>
 
-                    <Link
-                        to="/doctors"
-                        className="
+                            <Link
+                                to="/doctors"
+                                className="
                                 bg-white
                                 text-green-700
                                 px-5
@@ -160,13 +182,13 @@ function DashboardPage() {
                                 hover:bg-green-100
                                 transition
                             "
-                    >
-                        Manage Doctors
-                    </Link>
+                            >
+                                Manage Doctors
+                            </Link>
 
-                    <Link
-                        to="/appointments"
-                        className="
+                            <Link
+                                to="/appointments"
+                                className="
                                 bg-white
                                 text-purple-700
                                 px-5
@@ -176,137 +198,150 @@ function DashboardPage() {
                                 hover:bg-purple-100
                                 transition
                             "
-                    >
-                        Manage Appointments
-                    </Link>
-                </div>
-            </div>
-
-            <div
-                className="
-                    grid
-                    grid-cols-1
-                    md:grid-cols-3
-                    gap-6
-                "
-            >
-                <DashboardStats
-                    title="Total Patients"
-                    value={patientsCount}
-                    color="bg-blue-500"
-                />
-
-                <DashboardStats
-                    title="Total Doctors"
-                    value={doctorsCount}
-                    color="bg-green-500"
-                />
-
-                <DashboardStats
-                    title="Appointments"
-                    value={appointmentsCount}
-                    color="bg-purple-500"
-                />
-            </div>
-            <div
-                className="
-        bg-white
-        p-6
-        rounded-xl
-        shadow-md
-        mt-8
-    "
-            >
-                <h2
-                    className="
-            text-xl
-            font-bold
-            mb-6
-        "
-                >
-                    Appointments Overview
-                </h2>
-
-                <div className="h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={chartData}
-                                dataKey="value"
-                                nameKey="name"
-                                outerRadius={140}
-                                label
                             >
-                                {chartData.map((entry, index) => (
-                                    <Cell
-                                        key={index}
-                                        fill={COLORS[index % COLORS.length]}
-                                    />
-                                ))}
-                            </Pie>
+                                Manage Appointments
+                            </Link>
+                        </div>
+                    </div>
 
-                            <Tooltip />
+                    <div
+                        className="
+                                grid
+                                grid-cols-1
+                                md:grid-cols-3
+                                gap-6
+                            "
+                    >
+                        <DashboardStats
+                            title="Total Patients"
+                            value={patientsCount}
+                            color="bg-blue-500"
+                        />
 
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-                <div
-                    className="
+                        <DashboardStats
+                            title="Total Doctors"
+                            value={doctorsCount}
+                            color="bg-green-500"
+                        />
+
+                        <DashboardStats
+                            title="Appointments"
+                            value={appointmentsCount}
+                            color="bg-purple-500"
+                        />
+                    </div>
+                    <div
+                        className="
+                        bg-white
+                        p-6
+                        rounded-xl
+                        shadow-md
+                        mt-8
+                    "
+                    >
+                        <h2
+                            className="
+                                    text-xl
+                                    font-bold
+                                    mb-6
+                                "
+                        >
+                            Appointments Overview
+                        </h2>
+
+                        <div className="h-[400px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={chartData}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        outerRadius={140}
+                                        label
+                                    >
+                                        {chartData.map((entry, index) => (
+                                            <Cell
+                                                key={index}
+                                                fill={
+                                                    COLORS[
+                                                        index % COLORS.length
+                                                    ]
+                                                }
+                                            />
+                                        ))}
+                                    </Pie>
+
+                                    <Tooltip />
+
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div
+                            className="
                             bg-white
                             p-6
                             rounded-xl
                             shadow-md
                             mt-8
                         "
-                >
-                    <h2
-                        className="
+                        >
+                            <h2
+                                className="
                                 text-xl
                                 font-bold
                                 mb-6
                             "
-                    >
-                        Recent Appointments
-                    </h2>
+                            >
+                                Recent Appointments
+                            </h2>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full border-collapse">
-                            <thead className="bg-gray-100">
-                                <tr>
-                                    <th className="p-3 border">Patient</th>
+                            <div className="overflow-x-auto">
+                                <table className="w-full border-collapse">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="p-3 border">
+                                                Patient
+                                            </th>
 
-                                    <th className="p-3 border">Doctor</th>
+                                            <th className="p-3 border">
+                                                Doctor
+                                            </th>
 
-                                    <th className="p-3 border">Date</th>
+                                            <th className="p-3 border">Date</th>
 
-                                    <th className="p-3 border">Status</th>
-                                </tr>
-                            </thead>
+                                            <th className="p-3 border">
+                                                Status
+                                            </th>
+                                        </tr>
+                                    </thead>
 
-                            <tbody>
-                                {recentAppointments.map((appointment) => (
-                                    <tr
-                                        key={appointment.id}
-                                        className="hover:bg-gray-50"
-                                    >
-                                        <td className="p-3 border">
-                                            {appointment.patientName}
-                                        </td>
+                                    <tbody>
+                                        {recentAppointments.map(
+                                            (appointment) => (
+                                                <tr
+                                                    key={appointment.id}
+                                                    className="hover:bg-gray-50"
+                                                >
+                                                    <td className="p-3 border">
+                                                        {
+                                                            appointment.patientName
+                                                        }
+                                                    </td>
 
-                                        <td className="p-3 border">
-                                            {appointment.doctorName}
-                                        </td>
+                                                    <td className="p-3 border">
+                                                        {appointment.doctorName}
+                                                    </td>
 
-                                        <td className="p-3 border">
-                                            {formatDate(
-                                                appointment.appointmentDate
-                                            )}
-                                        </td>
+                                                    <td className="p-3 border">
+                                                        {formatDate(
+                                                            appointment.appointmentDate
+                                                        )}
+                                                    </td>
 
-                                        <td className="p-3 border">
-                                            <span
-                                                className={`
+                                                    <td className="p-3 border">
+                                                        <span
+                                                            className={`
                                                             px-3
                                                             py-1
                                                             rounded-full
@@ -314,17 +349,20 @@ function DashboardPage() {
                                                             font-semibold
                                                             ${getStatusBadge(appointment.status)}
                                                         `}
-                                            >
-                                                {appointment.status}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                                        >
+                                                            {appointment.status}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </>
+            )}
         </DashboardLayout>
     );
 }

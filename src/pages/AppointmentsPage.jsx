@@ -3,7 +3,8 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import DashboardLayout from "../layouts/DashboardLayout";
 import EmptyState from "../components/EmptyState";
 import api from "../api/axiosConfig";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import { toast } from "react-toastify";
 
 import ConfirmModal from "../components/ConfirmModal";
@@ -148,6 +149,63 @@ function AppointmentsPage() {
             setDoctors(response.data);
         } catch (error) {
             console.error(error);
+        }
+    };
+
+    const handleExportExcel = async () => {
+        try {
+            // FETCH ALL APPOINTMENTS (NOT JUST CURRENT PAGE)
+            const response = await api.get(
+                "/appointments?page=0&size=1000&sortBy=appointmentDate"
+            );
+
+            const allAppointments = response.data.content || [];
+
+            // FORMAT DATA FOR EXCEL
+            const exportData = allAppointments.map((a) => ({
+                ID: a.id,
+                Patient: a.patientName,
+                Age: a.patientAge,
+                Gender: a.patientGender,
+                Disease: a.patientDisease,
+                Phone: a.patientPhone,
+                Doctor: a.doctorName,
+                Date: formatDate(a.appointmentDate),
+                Status: a.status,
+            }));
+
+            // CREATE WORKSHEET
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+            // CREATE WORKBOOK
+            const workbook = XLSX.utils.book_new();
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Appointments");
+
+            // GENERATE EXCEL FILE
+            const excelBuffer = XLSX.write(workbook, {
+                bookType: "xlsx",
+                type: "array",
+            });
+
+            // CREATE FILE
+            const fileData = new Blob([excelBuffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+            });
+
+            // DOWNLOAD FILE
+            saveAs(
+                fileData,
+                `appointments-report-${new Date()
+                    .toISOString()
+                    .slice(0, 10)}.xlsx`
+            );
+
+            toast.success("Appointments exported successfully");
+        } catch (error) {
+            console.error(error);
+
+            toast.error("Failed to export appointments");
         }
     };
 
@@ -712,7 +770,7 @@ function AppointmentsPage() {
                 </div>
             </div>
             {/* CLEAR FILTER */}
-            <div className="mb-6">
+            <div className="mb-6 flex justify-between items-center">
                 <button
                     onClick={handleClearFilters}
                     className="
@@ -725,6 +783,20 @@ function AppointmentsPage() {
                     "
                 >
                     Clear Filters
+                </button>
+                //To Export Total Appointments in Excel
+                <button
+                    onClick={handleExportExcel}
+                    className="
+                            bg-green-600
+                            hover:bg-green-700
+                            text-white
+                            px-5
+                            py-2
+                            rounded-lg
+                        "
+                >
+                    Export Excel
                 </button>
             </div>
             {/* APPOINTMENTS TABLE */}

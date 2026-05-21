@@ -5,6 +5,8 @@ import EmptyState from "../components/EmptyState";
 import api from "../api/axiosConfig";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { toast } from "react-toastify";
 
 import ConfirmModal from "../components/ConfirmModal";
@@ -161,6 +163,26 @@ function AppointmentsPage() {
 
             const allAppointments = response.data.content || [];
 
+            const scheduledCount = allAppointments.filter(
+                (a) => a.status === "SCHEDULED"
+            ).length;
+
+            const completedCount = allAppointments.filter(
+                (a) => a.status === "COMPLETED"
+            ).length;
+
+            const pendingCount = allAppointments.filter(
+                (a) => a.status === "PENDING"
+            ).length;
+
+            const cancelledCount = allAppointments.filter(
+                (a) => a.status === "CANCELLED"
+            ).length;
+
+            const rejectedCount = allAppointments.filter(
+                (a) => a.status === "REJECTED"
+            ).length;
+
             // FORMAT DATA FOR EXCEL
             const exportData = allAppointments.map((a) => ({
                 ID: a.id,
@@ -206,6 +228,93 @@ function AppointmentsPage() {
             console.error(error);
 
             toast.error("Failed to export appointments");
+        }
+    };
+
+    const handleExportPDF = async () => {
+        try {
+            // FETCH ALL APPOINTMENTS
+            const response = await api.get(
+                "/appointments?page=0&size=1000&sortBy=appointmentDate"
+            );
+
+            const allAppointments = response.data.content || [];
+
+            // STATUS COUNTS
+            const scheduledCount = allAppointments.filter(
+                (a) => a.status === "SCHEDULED"
+            ).length;
+
+            const completedCount = allAppointments.filter(
+                (a) => a.status === "COMPLETED"
+            ).length;
+
+            const pendingCount = allAppointments.filter(
+                (a) => a.status === "PENDING"
+            ).length;
+
+            const cancelledCount = allAppointments.filter(
+                (a) => a.status === "CANCELLED"
+            ).length;
+
+            const rejectedCount = allAppointments.filter(
+                (a) => a.status === "REJECTED"
+            ).length;
+
+            // CREATE PDF
+            const doc = new jsPDF();
+
+            // TITLE
+            doc.setFontSize(18);
+
+            doc.text("Hospital Appointment Report", 14, 20);
+
+            // DATE
+            doc.setFontSize(11);
+
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+
+            // SUMMARY
+            doc.text(`Total Appointments: ${allAppointments.length}`, 14, 42);
+
+            doc.text(`Scheduled: ${scheduledCount}`, 14, 50);
+
+            doc.text(`Completed: ${completedCount}`, 14, 58);
+
+            doc.text(`Pending: ${pendingCount}`, 14, 66);
+
+            doc.text(`Cancelled: ${cancelledCount}`, 14, 74);
+
+            doc.text(`Rejected: ${rejectedCount}`, 14, 82);
+
+            // TABLE
+            autoTable(doc, {
+                startY: 92,
+
+                head: [["#", "Patient", "Doctor", "Date", "Status", "Disease"]],
+
+                body: allAppointments.map((a, index) => [
+                    index + 1,
+                    a.patientName,
+                    a.doctorName,
+                    formatDate(a.appointmentDate),
+                    a.status,
+                    a.patientDisease,
+                ]),
+            });
+
+            // SAVE PDF
+            doc.save(
+                `appointments-report-${new Date()
+                    .toISOString()
+                    .slice(0, 10)}.pdf`
+            );
+
+            toast.success("PDF exported successfully");
+        } catch (error) {
+            console.error(error);
+
+            toast.error("Failed to export PDF");
         }
     };
 
@@ -784,7 +893,7 @@ function AppointmentsPage() {
                 >
                     Clear Filters
                 </button>
-                //To Export Total Appointments in Excel
+                {/* To Export Total Appointments in Excel */}
                 <button
                     onClick={handleExportExcel}
                     className="
@@ -797,6 +906,22 @@ function AppointmentsPage() {
                         "
                 >
                     Export Excel
+                </button>
+                {/* To Export Total Appointments in PDF */}
+                <button
+                    onClick={handleExportPDF}
+                    className="
+                            bg-blue-600
+                            hover:bg-blue-700
+                            text-white
+                            px-5
+                            py-2
+                            rounded-lg
+                            shadow-md
+                            ml-3
+                        "
+                >
+                    Export PDF
                 </button>
             </div>
             {/* APPOINTMENTS TABLE */}

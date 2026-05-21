@@ -317,44 +317,66 @@ function DashboardPage() {
                                     </thead>
 
                                     <tbody>
-                                        {recentAppointments.map(
-                                            (appointment) => (
-                                                <tr
-                                                    key={appointment.id}
-                                                    className="hover:bg-gray-50"
-                                                >
-                                                    <td className="p-3 border">
-                                                        {
-                                                            appointment.patientName
-                                                        }
-                                                    </td>
+                                        {recentAppointments.length > 0 ? (
+                                            recentAppointments.map(
+                                                (appointment) => (
+                                                    <tr
+                                                        key={appointment.id}
+                                                        className="
+                                                                hover:bg-gray-50
+                                                            "
+                                                    >
+                                                        <td className="p-3 border">
+                                                            {
+                                                                appointment.patientName
+                                                            }
+                                                        </td>
 
-                                                    <td className="p-3 border">
-                                                        {appointment.doctorName}
-                                                    </td>
+                                                        <td className="p-3 border">
+                                                            {
+                                                                appointment.doctorName
+                                                            }
+                                                        </td>
 
-                                                    <td className="p-3 border">
-                                                        {formatDate(
-                                                            appointment.appointmentDate
-                                                        )}
-                                                    </td>
+                                                        <td className="p-3 border">
+                                                            {formatDate(
+                                                                appointment.appointmentDate
+                                                            )}
+                                                        </td>
 
-                                                    <td className="p-3 border">
-                                                        <span
-                                                            className={`
-                                                            px-3
-                                                            py-1
-                                                            rounded-full
-                                                            text-sm
-                                                            font-semibold
-                                                            ${getStatusBadge(appointment.status)}
-                                                        `}
-                                                        >
-                                                            {appointment.status}
-                                                        </span>
-                                                    </td>
-                                                </tr>
+                                                        <td className="p-3 border">
+                                                            <span
+                                                                className={`
+                                                                            px-3
+                                                                            py-1
+                                                                            rounded-full
+                                                                            text-sm
+                                                                            font-semibold
+                                                                            ${getStatusBadge(appointment.status)}
+                                                                        `}
+                                                            >
+                                                                {
+                                                                    appointment.status
+                                                                }
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                )
                                             )
+                                        ) : (
+                                            <tr>
+                                                <td
+                                                    colSpan="4"
+                                                    className="
+                                                            text-center
+                                                            p-6
+                                                            text-gray-500
+                                                            font-medium
+                                                        "
+                                                >
+                                                    No recent appointments found
+                                                </td>
+                                            </tr>
                                         )}
                                     </tbody>
                                 </table>

@@ -57,13 +57,11 @@ function Sidebar() {
                     </li>
                 )}
 
-                {role === "ROLE_PATIENT" && (
-                    <li>
-                        <Link to="/notifications" className="text-blue-600">
-                            Notifications
-                        </Link>
-                    </li>
-                )}
+                <li>
+                    <Link to="/notifications" className="text-blue-600">
+                        Notifications
+                    </Link>
+                </li>
 
                 {role === "ROLE_PATIENT" && (
                     <li>

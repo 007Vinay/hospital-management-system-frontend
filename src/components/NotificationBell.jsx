@@ -11,6 +11,16 @@ function NotificationBell() {
 
     useEffect(() => {
         fetchNotifications();
+
+        // AUTO REFRESH EVERY 5 SECONDS
+
+        const interval = setInterval(() => {
+            fetchNotifications();
+        }, 5000);
+
+        // CLEANUP
+
+        return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {

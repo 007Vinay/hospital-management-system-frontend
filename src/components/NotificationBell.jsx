@@ -50,6 +50,16 @@ function NotificationBell() {
         }
     };
 
+    const markAsRead = async (id) => {
+        try {
+            await api.put(`/notifications/${id}/read`);
+
+            fetchNotifications();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div className="relative" ref={dropdownRef}>
             {/* BELL ICON */}
@@ -62,7 +72,7 @@ function NotificationBell() {
 
                 {/* BADGE */}
 
-                {notifications.length > 0 && (
+                {notifications.filter((n) => !n.read).length > 0 && (
                     <span
                         className="
                             absolute
@@ -76,7 +86,7 @@ function NotificationBell() {
                             py-0.5
                         "
                     >
-                        {notifications.length}
+                        {notifications.filter((n) => !n.read).length}
                     </span>
                 )}
             </button>
@@ -117,11 +127,17 @@ function NotificationBell() {
                         notifications.map((notification) => (
                             <div
                                 key={notification.id}
-                                className="
-                                    p-4
-                                    border-b
-                                    hover:bg-gray-50
-                                "
+                                onClick={() => markAsRead(notification.id)}
+                                className={`
+                                            p-4
+                                            border-b
+                                            hover:bg-gray-50
+                                            ${
+                                                notification.read
+                                                    ? "opacity-60"
+                                                    : "bg-blue-50"
+                                            }
+                                        `}
                             >
                                 <p
                                     className="

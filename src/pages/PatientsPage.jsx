@@ -21,6 +21,8 @@ function PatientsPage() {
         gender: "",
         disease: "",
         phone: "",
+        username: "",
+        password: "",
     });
 
     const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +72,9 @@ function PatientsPage() {
             !formData.age ||
             !formData.gender ||
             !formData.disease ||
-            !formData.phone
+            !formData.phone ||
+            !formData.username ||
+            !formData.password
         ) {
             setFormError("All fields are required");
 
@@ -78,13 +82,10 @@ function PatientsPage() {
         }
 
         setSubmitting(true);
+
         try {
             if (editingPatientId) {
-                await api.put(
-                    `/patients/${editingPatientId}`,
-
-                    formData
-                );
+                await api.put(`/patients/${editingPatientId}`, formData);
             } else {
                 await api.post("/patients", formData);
             }
@@ -105,24 +106,25 @@ function PatientsPage() {
                 gender: "",
                 disease: "",
                 phone: "",
+                username: "",
+                password: "",
             });
 
-            setSubmitting(false);
+            setFormError("");
         } catch (error) {
             console.error(error);
 
-            toast.error("Operation failed");
+            const errorMessage =
+                error.response?.data?.messages?.phone ||
+                error.response?.data?.message ||
+                error.response?.data?.error ||
+                "Failed to add patient";
 
-            if (
-                error.response &&
-                error.response.data &&
-                error.response.data.message
-            ) {
-                setFormError(error.response.data.message);
-                setSubmitting(false);
-            } else {
-                setFormError("Failed to add patient");
-            }
+            setFormError(errorMessage);
+
+            toast.error(errorMessage);
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -183,6 +185,8 @@ function PatientsPage() {
             gender: patient.gender,
             disease: patient.disease,
             phone: patient.phone,
+            username: patient.username || "",
+            password: "",
         });
     };
 
@@ -275,6 +279,34 @@ function PatientsPage() {
                         rounded
                         w-full
                     "
+                />
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter Username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="
+                            border
+                            p-3
+                            rounded-lg
+                            w-full
+                        "
+                />
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="
+                            border
+                            p-3
+                            rounded-lg
+                            w-full
+                        "
                 />
 
                 <button

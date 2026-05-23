@@ -36,7 +36,11 @@ function RegisterPage() {
         } catch (error) {
             console.error(error);
 
-            alert(error.response?.data?.message || "Registration failed");
+            alert(
+                error.response?.data?.messages?.phone ||
+                    error.response?.data?.error ||
+                    "Registration failed"
+            );
         }
     };
 

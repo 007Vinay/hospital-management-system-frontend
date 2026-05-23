@@ -57,12 +57,6 @@ function Sidebar() {
                     </li>
                 )}
 
-                <li>
-                    <Link to="/notifications" className="text-blue-600">
-                        Notifications
-                    </Link>
-                </li>
-
                 {role === "ROLE_PATIENT" && (
                     <li>
                         <Link to="/book-appointment" className="text-blue-600">

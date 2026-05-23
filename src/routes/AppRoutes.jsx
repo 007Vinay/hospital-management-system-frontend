@@ -10,7 +10,6 @@ import DoctorsPage from "../pages/DoctorsPage";
 import MyAppointmentsPage from "../pages/MyAppointmentsPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AppointmentsPage from "../pages/AppointmentsPage";
-import NotificationsPage from "../pages/NotificationsPage";
 
 function AppRoutes() {
     return (
@@ -80,15 +79,6 @@ function AppRoutes() {
                             element={<BookAppointmentPage />}
                         />
                     </Route>
-
-                    <Route
-                        path="/notifications"
-                        element={
-                            <ProtectedRoute>
-                                <NotificationsPage />
-                            </ProtectedRoute>
-                        }
-                    />
                 </Route>
 
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />

@@ -18,6 +18,16 @@ function MyAppointmentsPage() {
         fetchActiveAppointments();
 
         fetchHistoryAppointments();
+
+        // Auto refresh every 5 seconds
+        const interval = setInterval(() => {
+            fetchActiveAppointments();
+
+            fetchHistoryAppointments();
+        }, 5000);
+
+        // Cleanup interval on component unmount
+        return () => clearInterval(interval);
     }, []);
 
     const fetchActiveAppointments = async () => {

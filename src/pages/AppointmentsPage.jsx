@@ -713,7 +713,7 @@ function AppointmentsPage() {
                                             cursor-pointer
                                         "
                                 >
-                                    {doctor.name}
+                                    {doctor.name} - {doctor.specialization}
                                 </div>
                             ))}
                         </div>
@@ -781,7 +781,7 @@ function AppointmentsPage() {
                                             cursor-pointer
                                         "
                                 >
-                                    {patient.name}
+                                    {patient.name} - {patient.phone}
                                 </div>
                             ))}
                         </div>

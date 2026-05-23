@@ -6,23 +6,43 @@ import autoTable from "jspdf-autotable";
 import api from "../api/axiosConfig";
 
 function MyAppointmentsPage() {
-    const [appointments, setAppointments] = useState([]);
+    const [activeAppointments, setActiveAppointments] = useState([]);
+
+    const [historyAppointments, setHistoryAppointments] = useState([]);
+
+    const [activeTab, setActiveTab] = useState("current");
 
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchAppointments();
+        fetchActiveAppointments();
+
+        fetchHistoryAppointments();
     }, []);
 
-    const fetchAppointments = async () => {
+    const fetchActiveAppointments = async () => {
         try {
-            const response = await api.get("/appointments/my-appointments");
+            const response = await api.get(
+                "/appointments/my-active-appointments"
+            );
 
-            setAppointments(response.data);
+            setActiveAppointments(response.data);
         } catch (error) {
             console.error(error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchHistoryAppointments = async () => {
+        try {
+            const response = await api.get(
+                "/appointments/my-appointment-history"
+            );
+
+            setHistoryAppointments(response.data);
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -123,18 +143,101 @@ function MyAppointmentsPage() {
                     My Appointments
                 </h1>
 
-                {appointments.length === 0 ? (
-                    <p>No appointments found.</p>
+                <div className="flex gap-4 mb-6">
+                    <button
+                        onClick={() => setActiveTab("current")}
+                        className={`
+            px-4 py-2 rounded-lg font-medium transition
+            ${
+                activeTab === "current"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-700"
+            }
+        `}
+                    >
+                        Current Bookings
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab("history")}
+                        className={`
+            px-4 py-2 rounded-lg font-medium transition
+            ${
+                activeTab === "history"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-700"
+            }
+        `}
+                    >
+                        History
+                    </button>
+                </div>
+
+                {activeTab === "current" ? (
+                    activeAppointments.length === 0 ? (
+                        <p>No active appointments found.</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {activeAppointments.map((appointment) => (
+                                <div
+                                    key={appointment.id}
+                                    className="
+                            border
+                            p-4
+                            rounded-lg
+                            shadow-sm
+                        "
+                                >
+                                    <p>
+                                        <strong>Doctor:</strong>{" "}
+                                        {appointment.doctor?.name}
+                                    </p>
+
+                                    <p>
+                                        <strong>Date:</strong>{" "}
+                                        {appointment.appointmentDate}
+                                    </p>
+
+                                    <p>
+                                        <strong>Status:</strong>{" "}
+                                        {appointment.status}
+                                    </p>
+
+                                    <button
+                                        onClick={() =>
+                                            handleDownloadAppointmentPDF(
+                                                appointment
+                                            )
+                                        }
+                                        className="
+                                mt-4
+                                bg-blue-600
+                                hover:bg-blue-700
+                                text-white
+                                px-4
+                                py-2
+                                rounded-lg
+                            "
+                                    >
+                                        Download PDF
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                ) : historyAppointments.length === 0 ? (
+                    <p>No appointment history found.</p>
                 ) : (
                     <div className="space-y-4">
-                        {appointments.map((appointment) => (
+                        {historyAppointments.map((appointment) => (
                             <div
                                 key={appointment.id}
                                 className="
-                                    border
-                                    p-4
-                                    rounded
-                                "
+                            border
+                            p-4
+                            rounded-lg
+                            bg-gray-50
+                        "
                             >
                                 <p>
                                     <strong>Doctor:</strong>{" "}
@@ -158,14 +261,14 @@ function MyAppointmentsPage() {
                                         )
                                     }
                                     className="
-                                            mt-4
-                                            bg-blue-600
-                                            hover:bg-blue-700
-                                            text-white
-                                            px-4
-                                            py-2
-                                            rounded-lg
-                                        "
+                                mt-4
+                                bg-blue-600
+                                hover:bg-blue-700
+                                text-white
+                                px-4
+                                py-2
+                                rounded-lg
+                            "
                                 >
                                     Download PDF
                                 </button>

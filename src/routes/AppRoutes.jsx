@@ -10,6 +10,8 @@ import DoctorsPage from "../pages/DoctorsPage";
 import MyAppointmentsPage from "../pages/MyAppointmentsPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AppointmentsPage from "../pages/AppointmentsPage";
+import ForgotPassword from "../pages/ForgotPassword";
+import VerifyOtp from "../pages/VerifyOtp";
 
 function AppRoutes() {
     return (
@@ -20,6 +22,10 @@ function AppRoutes() {
                 <Route path="/register" element={<RegisterPage />} />
 
                 <Route path="/" element={<Navigate to="/login" />} />
+
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+
+                <Route path="/verify-otp" element={<VerifyOtp />} />
 
                 <Route element={<ProtectedRoute />}>
                     <Route

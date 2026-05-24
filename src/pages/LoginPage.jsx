@@ -83,6 +83,13 @@ function LoginPage() {
                             className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
+
+                        <p
+                            className="text-sm text-blue-600 cursor-pointer mt-2"
+                            onClick={() => navigate("/forgot-password")}
+                        >
+                            Forgot Password?
+                        </p>
                     </div>
 
                     <button

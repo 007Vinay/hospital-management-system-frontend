@@ -59,11 +59,12 @@ function MyProfilePage() {
                     <div>
                         <strong>Name:</strong> {profile.name}
                     </div>
-
                     <div>
                         <strong>Phone:</strong> +91 {profile.phone}
                     </div>
-
+                    <div>
+                        <strong>Email:</strong> {profile.email}
+                    </div>
                     <div>
                         <strong>Age:</strong> {profile.age}
                     </div>

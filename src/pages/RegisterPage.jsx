@@ -10,6 +10,7 @@ function RegisterPage() {
     const [formData, setFormData] = useState({
         fullName: "",
         phone: "",
+        email: "",
         age: "",
         gender: "",
         disease: "",
@@ -94,14 +95,14 @@ function RegisterPage() {
                     <div className="flex">
                         <div
                             className="
-            px-3
-            flex
-            items-center
-            border
-            border-r-0
-            rounded-l
-            bg-gray-100
-        "
+                                    px-3
+                                    flex
+                                    items-center
+                                    border
+                                    border-r-0
+                                    rounded-l
+                                    bg-gray-100
+                                "
                         >
                             +91
                         </div>
@@ -130,6 +131,21 @@ function RegisterPage() {
                             required
                         />
                     </div>
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="
+                                    w-full
+                                    border
+                                    p-2
+                                    rounded
+                                "
+                        required
+                    />
 
                     <input
                         type="number"

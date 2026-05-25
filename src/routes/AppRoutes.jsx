@@ -12,6 +12,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import AppointmentsPage from "../pages/AppointmentsPage";
 import ForgotPassword from "../pages/ForgotPassword";
 import VerifyOtp from "../pages/VerifyOtp";
+import ResetPassword from "../pages/ResetPassword";
 
 function AppRoutes() {
     return (
@@ -26,6 +27,8 @@ function AppRoutes() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
 
                 <Route path="/verify-otp" element={<VerifyOtp />} />
+
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 <Route element={<ProtectedRoute />}>
                     <Route

@@ -19,8 +19,9 @@ function PatientsPage() {
         name: "",
         age: "",
         gender: "",
-        disease: "",
         phone: "",
+        email: "",
+        disease: "",
         username: "",
         password: "",
     });
@@ -69,10 +70,11 @@ function PatientsPage() {
 
         if (
             !formData.name ||
+            !formData.phone ||
+            !formData.email ||
             !formData.age ||
             !formData.gender ||
             !formData.disease ||
-            !formData.phone ||
             !formData.username ||
             !formData.password
         ) {
@@ -102,10 +104,11 @@ function PatientsPage() {
 
             setFormData({
                 name: "",
+                phone: "",
+                email: "",
                 age: "",
                 gender: "",
                 disease: "",
-                phone: "",
                 username: "",
                 password: "",
             });
@@ -181,10 +184,11 @@ function PatientsPage() {
 
         setFormData({
             name: patient.name,
+            phone: patient.phone,
+            email: patient.email,
             age: patient.age,
             gender: patient.gender,
             disease: patient.disease,
-            phone: patient.phone,
             username: patient.username || "",
             password: "",
         });
@@ -272,6 +276,20 @@ function PatientsPage() {
                     name="phone"
                     placeholder="Phone"
                     value={formData.phone}
+                    onChange={handleChange}
+                    className="
+                        border
+                        p-2
+                        rounded
+                        w-full
+                    "
+                />
+
+                <input
+                    type="text"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
                     onChange={handleChange}
                     className="
                         border
@@ -418,6 +436,7 @@ function PatientsPage() {
                             <th className="border p-3">Gender</th>
                             <th className="border p-3">Disease</th>
                             <th className="border p-3">Phone</th>
+                            <th className="border p-3">Email</th>
                             <th className="border p-3">Actions</th>
                         </tr>
                     </thead>
@@ -433,6 +452,7 @@ function PatientsPage() {
                                     {patient.disease}
                                 </td>
                                 <td className="border p-3">{patient.phone}</td>
+                                <td className="border p-3">{patient.email}</td>
 
                                 <td>
                                     <button
